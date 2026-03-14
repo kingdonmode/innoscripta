@@ -1,0 +1,802 @@
+{
+	"info": {
+		"_postman_id": "979b2b1b-88f9-48fc-84bf-7ef4dd38443b",
+		"name": "Innoscripta News Aggregator API",
+		"description": "REST API for a news aggregator backend that fetches and stores articles from EventRegistry, The Guardian, and The New York Times.\n\n**Base URL:** `{{base_url}}/api`\n\n**Data sources:**\n- `newsapi` — EventRegistry (global news index)\n- `guardian` — The Guardian\n- `nytimes` — The New York Times (Times Wire)\n\n**Pagination:** All listing endpoints are paginated using Laravel's `LengthAwarePaginator`. Pagination metadata (`total`, `per_page`, `current_page`, `last_page`, `next_page_url`, `prev_page_url`) is returned at the root level alongside `data`.\n\n**Refreshing data:** Run `php artisan news:fetch` manually or let the hourly scheduler handle it.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "3684503",
+		"_collection_link": "https://gold-resonance-524834.postman.co/workspace/My-Workspace~61c7175a-e899-4117-871c-405d1928d7af/collection/3684503-979b2b1b-88f9-48fc-84bf-7ef4dd38443b?action=share&source=collection_link&creator=3684503"
+	},
+	"item": [
+		{
+			"name": "Articles",
+			"item": [
+				{
+					"name": "List Articles",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/articles?source=guardian,nytimes,newsapi&author=Vikram Singh, Amy Graff, Hannah Harris Green&per_page=15&page=1&sort=published_at&order=desc",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"articles"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "technology",
+									"description": "Full-text keyword search across title, description, and content. Partial matches are supported.\n\nExample: `q=artificial intelligence`",
+									"disabled": true
+								},
+								{
+									"key": "source",
+									"value": "guardian,nytimes,newsapi",
+									"description": "Filter by one or more source IDs (comma-separated).\n\nAccepted values: `newsapi`, `guardian`, `nytimes`\n\nExample: `source=guardian` or `source=newsapi,nytimes`"
+								},
+								{
+									"key": "category",
+									"value": "Technology",
+									"description": "Filter by one or more categories (comma-separated, case-sensitive).\n\nUse `GET /api/articles/categories` to discover available values.\n\nExample: `category=Technology` or `category=Business,Science`",
+									"disabled": true
+								},
+								{
+									"key": "author",
+									"value": "Vikram Singh, Amy Graff, Hannah Harris Green",
+									"description": "Partial match on author name (case-insensitive).\n\nExample: `author=Hannah`"
+								},
+								{
+									"key": "from",
+									"value": "2026-03-01",
+									"description": "Return articles published on or after this date.\n\nFormat: `YYYY-MM-DD`",
+									"disabled": true
+								},
+								{
+									"key": "to",
+									"value": "2026-03-14",
+									"description": "Return articles published on or before this date.\n\nFormat: `YYYY-MM-DD`. Must be equal to or after `from`.",
+									"disabled": true
+								},
+								{
+									"key": "per_page",
+									"value": "15",
+									"description": "Number of results per page.\n\nRange: 1–100. Default: 15."
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number (1-based). Default: 1."
+								},
+								{
+									"key": "sort",
+									"value": "published_at",
+									"description": "Column to sort results by.\n\nAccepted values: `published_at` (default), `title`"
+								},
+								{
+									"key": "order",
+									"value": "desc",
+									"description": "Sort direction.\n\nAccepted values: `asc`, `desc` (default)"
+								}
+							]
+						},
+						"description": "Returns a paginated list of articles. All query parameters are optional and can be combined freely.\n\n**User preference support:** pass `source`, `category`, and `author` to personalise results — the frontend can store these preferences and send them on every request."
+					},
+					"response": [
+						{
+							"name": "200 OK — empty result set",
+							"originalRequest": {
+								"method": "GET",
+								"header": []
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"name": "Content-Type",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"current_page\": 1,\n    \"data\": [],\n    \"first_page_url\": \"http://localhost:8000/api/articles?page=1\",\n    \"from\": null,\n    \"last_page\": 1,\n    \"last_page_url\": \"http://localhost:8000/api/articles?page=1\",\n    \"links\": [\n        {\n            \"url\": null,\n            \"label\": \"&laquo; Previous\",\n            \"active\": false\n        },\n        {\n            \"url\": \"http://localhost:8000/api/articles?page=1\",\n            \"label\": \"1\",\n            \"active\": true\n        },\n        {\n            \"url\": null,\n            \"label\": \"Next &raquo;\",\n            \"active\": false\n        }\n    ],\n    \"next_page_url\": null,\n    \"path\": \"http://localhost:8000/api/articles\",\n    \"per_page\": 15,\n    \"prev_page_url\": null,\n    \"to\": null,\n    \"total\": 0\n}"
+						},
+						{
+							"name": "422 Unprocessable — invalid per_page",
+							"originalRequest": {
+								"method": "GET",
+								"header": []
+							},
+							"status": "Unprocessable Content",
+							"code": 422,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"name": "Content-Type",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"The per page field must not be greater than 100.\",\n    \"errors\": {\n        \"per_page\": [\n            \"The per page field must not be greater than 100.\"\n        ]\n    }\n}"
+						},
+						{
+							"name": "422 Unprocessable — invalid date",
+							"originalRequest": {
+								"method": "GET",
+								"header": []
+							},
+							"status": "Unprocessable Content",
+							"code": 422,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"name": "Content-Type",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"The from field must be a valid date.\",\n    \"errors\": {\n        \"from\": [\n            \"The from field must be a valid date.\"\n        ]\n    }\n}"
+						},
+						{
+							"name": "422 Unprocessable — to before from",
+							"originalRequest": {
+								"method": "GET",
+								"header": []
+							},
+							"status": "Unprocessable Content",
+							"code": 422,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"name": "Content-Type",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"The to field must be a date after or equal to from.\",\n    \"errors\": {\n        \"to\": [\n            \"The to field must be a date after or equal to from.\"\n        ]\n    }\n}"
+						},
+						{
+							"name": "List Articles - 200 OK — filtered results",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/articles?source=guardian,nytimes,newsapi&author=Vikram Singh, Amy Graff, Hannah Harris Green&per_page=15&page=1&sort=published_at&order=desc",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"articles"
+									],
+									"query": [
+										{
+											"key": "q",
+											"value": "technology",
+											"description": "Full-text keyword search across title, description, and content. Partial matches are supported.\n\nExample: `q=artificial intelligence`",
+											"disabled": true
+										},
+										{
+											"key": "source",
+											"value": "guardian,nytimes,newsapi",
+											"description": "Filter by one or more source IDs (comma-separated).\n\nAccepted values: `newsapi`, `guardian`, `nytimes`\n\nExample: `source=guardian` or `source=newsapi,nytimes`"
+										},
+										{
+											"key": "category",
+											"value": "Technology",
+											"description": "Filter by one or more categories (comma-separated, case-sensitive).\n\nUse `GET /api/articles/categories` to discover available values.\n\nExample: `category=Technology` or `category=Business,Science`",
+											"disabled": true
+										},
+										{
+											"key": "author",
+											"value": "Vikram Singh, Amy Graff, Hannah Harris Green",
+											"description": "Partial match on author name (case-insensitive).\n\nExample: `author=Hannah`"
+										},
+										{
+											"key": "from",
+											"value": "2026-03-01",
+											"description": "Return articles published on or after this date.\n\nFormat: `YYYY-MM-DD`",
+											"disabled": true
+										},
+										{
+											"key": "to",
+											"value": "2026-03-14",
+											"description": "Return articles published on or before this date.\n\nFormat: `YYYY-MM-DD`. Must be equal to or after `from`.",
+											"disabled": true
+										},
+										{
+											"key": "per_page",
+											"value": "15",
+											"description": "Number of results per page.\n\nRange: 1–100. Default: 15."
+										},
+										{
+											"key": "page",
+											"value": "1",
+											"description": "Page number (1-based). Default: 1."
+										},
+										{
+											"key": "sort",
+											"value": "published_at",
+											"description": "Column to sort results by.\n\nAccepted values: `published_at` (default), `title`"
+										},
+										{
+											"key": "order",
+											"value": "desc",
+											"description": "Sort direction.\n\nAccepted values: `asc`, `desc` (default)"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.3.11"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 14 Mar 2026 13:39:57 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"name": "Content-Type",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"current_page\": 1,\n    \"data\": [\n        {\n            \"id\": 427,\n            \"external_id\": \"35990895c51ac67dd47a9205e79765f6\",\n            \"source_id\": \"newsapi\",\n            \"title\": \"Hyundai Verna vs Volkswagen Virtus 2026: Price, Features and Performance, Check New Updates - Times Bull\",\n            \"description\": \"Hyundai Verna 2026 vs Volkswagen Virtus: When it comes to sedans that exude luxury and speed on Indian roads, the Hyundai Verna and Volkswagen Virtus are top-rated.\",\n            \"content\": \"Hyundai Verna 2026 vs Volkswagen Virtus: When it comes to sedans that exude luxury and speed on Indian roads, the Hyundai Verna and Volkswagen Virtus are top-rated. Hyundai has launched the new 2026 Verna, which not only features a refreshed exterior but also has its variants renamed to the powerful, top-spec model, the HX10.\\n\\nOn the other hand, the Volkswagen Virtus GT Plus, boasting German engineering, is giving it tough competition with its solid build and performance. If you're unsure about which car to choose for your garage this year, this comparison will prove to be a game-changer.\\n\\nRECOMMENDED:EPFO Withdrawal Rules: 5 Benefits of ATM PF WithdrawalsRECOMMENDED:LPG Gas Tips- How to Check If Your Cylinder Has Less Gas? Know the processEngine and Power\\n\\nWhen it comes to performance, both cars are excellent in their segments. The Hyundai Verna's top-spec HX10 model offers customers a choice of turbocharged and naturally aspirated petrol engines, which are only available with automatic gearboxes.\\n\\nOn the other hand, the Volkswagen Virtus GT Plus model comes exclusively with a 1.5-liter TSI turbocharged petrol engine, renowned for its robust power delivery. While the lower variants of the Virtus also offer a 1.0-liter turbocharged engine, both cars offer a smooth, automatic transmission in the top-end model, making for a truly luxurious driving experience.\\n\\nRECOMMENDED:Navodaya Vidyalaya Class 6 Entrance Exam Result Expected Soon, Know Cut-Off Details\\\"RECOMMENDED:Weather Forecast - Rain Alert for 18 States For next 4 Days, Check Full Monsoon UpdateExterior and Design\\n\\nThe new Hyundai Verna 2026 features some minor but impressive changes. It now features stylish 16-inch alloy wheels with connected LED lights. The Verna's most distinctive feature is its large wing spoiler, which gives it a sports car-like appearance from the rear. The Virtus, on the other hand, has a more sober and European-style design.\\n\\nThe Virtus also features fog lamps on both the front and rear, which are very helpful in inclement weather. While the Verna offers a dual-tone paint option, the Virtus attracts customers with its chrome and sport trims. The Vertus's small and stylish trunk spoiler adds to its classic aesthetic.\\n\\nRECOMMENDED:FASTag Annual Pass Gets Costlier, Check the New Toll FeeRECOMMENDED:Upcoming 5G Phones in India: Poco X8 Pro, Vivo T5x 5G, Samsung Galaxy M17 5G and More Check Launch DateCabin and Smart Features\\n\\nHyundai has always been a king when it comes to features, and the 2026 Verna is no exception. The Verna HX10 offers a comprehensive infotainment system and a large digital display. It features a power driver's seat with memory function and an 'Electric Boss Mode' for the front passenger seat, giving you the feel of a luxury limousine. It also offers sunshades for the rear windows.\\n\\nHowever, the Vertus is not far behind; it features a 60:40 split rear seat, which helps increase boot space when needed, a feature missing from the Verna. The Vertus' seats feel quite firm, but the Verna wins when it comes to luxury features.\\n\\n5-Star Rating and Advanced Technology\\n\\nIn terms of safety, both cars are among the most reliable vehicles in the Indian market. The Volkswagen Virtus already comes with a 5-star Global NCAP rating, a testament to its robust body. The older Hyundai Verna also received a 5-star rating, and the 2026 model is expected to meet even stricter safety standards.\\n\\nHowever, in terms of safety technology, the Verna HX10 goes a step further than the Virtus, with Level 2 ADAS (Advanced Driver Assistance System), a 360-degree camera, and more airbags. These advanced features are not even found in the top-spec Virtus model, making the Verna a smart choice.\",\n            \"url\": \"https://www.timesbull.com/auto/hyundai-verna-vs-volkswagen-virtus-2026-price-features-and-performance-check-new-updates-728309.html\",\n            \"image_url\": \"https://www.timesbull.com/wp-content/uploads/2026/03/New-Sedan-Comparison.webp\",\n            \"author\": \"Vikram Singh\",\n            \"category\": \"Vehicles\",\n            \"source_name\": \"News Api\",\n            \"published_at\": \"2026-03-14T12:19:48.000000Z\",\n            \"created_at\": \"2026-03-14T13:05:21.000000Z\",\n            \"updated_at\": \"2026-03-14T13:06:39.000000Z\"\n        },\n        {\n            \"id\": 547,\n            \"external_id\": \"57e0316771965107d7d426a6205e141a\",\n            \"source_id\": \"guardian\",\n            \"title\": \"New study raises concerns about AI chatbots fueling delusional thinking\",\n            \"description\": \"First major study on ‘AI psychosis’ suggests chatbots can encourage delusions among vulnerable people\",\n            \"content\": \"A new scientific review raises concerns about how chatbots powered by artificial intelligence may encourage delusional thinking, especially in vulnerable people. A summary of existing evidence on artificial intelligence-induced psychosis was published last week in the Lancet Psychiatry, highlighting how chatbots can encourage delusional thinking – though possibly only in people who are already vulnerable to psychotic symptoms. The authors advocate for clinical testing of AI chatbots in conjunction with trained mental health professionals. For his paper, Dr Hamilton Morrin, a psychiatrist and researcher at King’s College in London, analyzed 20 media reports on so-called “AI psychosis”, which describes current theories as to how chatbots might induce or exacerbate delusions. “Emerging evidence indicates that agential AI might validate or amplify delusional or grandiose content, particularly in users already vulnerable to psychosis, although it is not clear whether these interactions can result in the emergence of de novo psychosis in the absence of pre-existing vulnerability,” he wrote. There are three main categories of psychotic delusions, Morrin says, identifying them as grandiose, romantic and paranoid. While chatbots can exacerbate any of these, their sycophantic responses means they especially latch on to the grandiose kind. In many of the cases in the essay, chatbots responded to users with mystical language to suggest that users have heightened spiritual importance. The bots also implied that users were speaking with a cosmic being who was using the chatbot as a medium. This type of mystical, sycophantic response was especially common in OpenAI’s GPT 4 model, which the company has now retired. Media reports would become essential in Morrin’s work, he said, as he and a colleague had already noticed patients “using large language model AI chatbots and having them validate their delusional beliefs”. “Initially, we weren’t sure if this was something being seen more widely,” he said, adding that “in April last year, we began to see media reports of individuals having delusions affirmed and arguably even amplified through their interactions with these AI chatbots.” When Morrin first began working on his paper, there were no published case reports yet. While some scientists who research psychosis said that media reports tend to overstate the idea that AI causes psychosis, Morrin expressed gratitude for those reports drawing attention to the phenomenon much faster than the scientific process can. “The pace of development in this space is so rapid that it’s perhaps not surprising that academia hasn’t necessarily been able to keep up,” said Morrin. Morrin also suggests more cautious phrasing than “AI psychosis” or “AI-induced psychosis”– phrases which are appearing frequently in outlets like NPR, the New York Times and the Guardian. Researchers are seeing people tipping into delusional thinking with AI use, but so far there’s no evidence that chatbots are associated with other psychotic symptoms like hallucinations or “thought disorder”, which consists of disorganized thinking and speech. Many researchers also think it’s unlikely that AI could induce delusions in people who weren’t already vulnerable to them. For this reason, Morrin said “AI-assocciated delusions” is “perhaps a more agnostic term”. Dr Kwame McKenzie, chief scientist at the Center for Addiction and Mental Health, says “it may be that those in early stages of the development of psychosis will be more at risk”. Psychotic thinking is something that develops over time and is not linear, and many people with “pre-psychotic thinking do not progress into psychotic thinking”, McKenzie explained. Echoing the concern that chatbots could worsen psychotic thinking is Dr Ragy Girgis, a professor of clinical psychiatry at Columbia University. Before someone develops a full on delusion, they will often have “attenuated delusional beliefs”, he says, which means they are not 100% sure their delusion is true. Girgis said the “worst case scenario” is when an attenuated delusion becomes a full on conviction, “which is when someone would be diagnosed with a psychotic disorder – it’s irreversible”. Notably, people who are vulnerable to psychotic disorders have used media to reinforce delusional beliefs long before AI technology existed. “People have been having delusions about technology since before the Industrial Revolution,” Morrin said. While in the past, people may have had to comb through YouTube videos or the contents of their local library to reinforce their delusions, chatbots can provide that reinforcement in a much faster, more concentrated dose. Their interactive nature can also “speed up the process”, of exacerbating psychotic symptoms, said Dr Dominic Oliver, a researcher at the University of Oxford. “You have something talking back to you and engaging with you and trying to build a relationship with you,” Oliver said. Girgis’s research found “the paid versions and newer versions [of chatbots] perform better than the older versions”, when they respond to clearly delusional prompts, “although they all perform badly”. Still, that these models perform differently suggests: “AI companies could potentially know how to program their chatbots to be safer and identify delusional versus non delusional content, because they’re doing it.” In a statement, OpenAI said that ChatGPT should not replace professional mental healthcare, and that the company worked with 170 mental health experts to make GPT 5 safer. GPT 5 has still given problematic responses to prompts indicating mental health crises. OpenAI said it continues to improve its models with the help of experts. Anthropic did not respond to the Guardian’s request for comment. Creating effective safeguards for delusional thinking could be tricky, Morrin said, because “when you work with people with beliefs of delusional intensity, if you directly challenge someone and tell them immediately that they’re completely wrong, actually what’s most likely is they’ll withdraw from you and become more socially isolated”. Instead, it’s important to create a fine balance where you try to understand the source of the delusional belief without encouraging it – that could be more than a chatbot can master.\",\n            \"url\": \"https://www.theguardian.com/technology/2026/mar/14/ai-chatbots-psychosis\",\n            \"image_url\": \"https://media.guim.co.uk/2816e6cb10ddbf2981d386e6e681efec5cacd23b/0_0_6827_5464/500.jpg\",\n            \"author\": \"Hannah Harris Green\",\n            \"category\": \"Technology\",\n            \"source_name\": \"The Guardian\",\n            \"published_at\": \"2026-03-14T11:00:18.000000Z\",\n            \"created_at\": \"2026-03-14T13:06:41.000000Z\",\n            \"updated_at\": \"2026-03-14T13:06:41.000000Z\"\n        },\n        {\n            \"id\": 587,\n            \"external_id\": \"5fdb2452932760c1b141b148060e20c7\",\n            \"source_id\": \"nytimes\",\n            \"title\": \"5 Things to Know About the Unusual March Heat Wave in the West\",\n            \"description\": \"Soaring temperatures across California and the Southwest are expected to break records for March.\",\n            \"content\": \"Soaring temperatures across California and the Southwest are expected to break records for March.\\n\\nTopics: Heat and Heat Waves, Weather, Deserts\\n\\nOrganizations: National Weather Service\\n\\nLocations: Los Angeles (Calif), Arizona, California, Palm Springs (Calif), Phoenix (Ariz)\",\n            \"url\": \"https://www.nytimes.com/2026/03/14/weather/west-coast-heat-wave-la-phoenix.html\",\n            \"image_url\": \"https://static01.nyt.com/images/2026/03/14/multimedia/14wea-heatwavewtk-qjpg/14wea-heatwavewtk-qjpg-mediumThreeByTwo440.jpg\",\n            \"author\": \"Amy Graff\",\n            \"category\": \"Weather\",\n            \"source_name\": \"The New York Times\",\n            \"published_at\": \"2026-03-14T09:30:04.000000Z\",\n            \"created_at\": \"2026-03-14T13:06:42.000000Z\",\n            \"updated_at\": \"2026-03-14T13:06:42.000000Z\"\n        }\n    ],\n    \"first_page_url\": \"http://localhost:8000/api/articles?page=1\",\n    \"from\": 1,\n    \"last_page\": 1,\n    \"last_page_url\": \"http://localhost:8000/api/articles?page=1\",\n    \"links\": [\n        {\n            \"url\": null,\n            \"label\": \"&laquo; Previous\",\n            \"page\": null,\n            \"active\": false\n        },\n        {\n            \"url\": \"http://localhost:8000/api/articles?page=1\",\n            \"label\": \"1\",\n            \"page\": 1,\n            \"active\": true\n        },\n        {\n            \"url\": null,\n            \"label\": \"Next &raquo;\",\n            \"page\": null,\n            \"active\": false\n        }\n    ],\n    \"next_page_url\": null,\n    \"path\": \"http://localhost:8000/api/articles\",\n    \"per_page\": 15,\n    \"prev_page_url\": null,\n    \"to\": 3,\n    \"total\": 3\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Single Article",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/articles/424",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"articles",
+								"424"
+							]
+						},
+						"description": "Returns a single article by its database `id`.\n\nThe response is wrapped in a `data` envelope."
+					},
+					"response": [
+						{
+							"name": "404 Not Found",
+							"originalRequest": {
+								"method": "GET",
+								"header": []
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"name": "Content-Type",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"No query results for model [App\\\\Models\\\\Article] 99999\"\n}"
+						},
+						{
+							"name": "Get Single Article",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/articles/424",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"articles",
+										"424"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.3.11"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 14 Mar 2026 13:09:26 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"name": "Content-Type",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [
+								{
+									"expires": "Invalid Date",
+									"domain": "",
+									"path": ""
+								}
+							],
+							"body": "{\n    \"data\": {\n        \"id\": 424,\n        \"external_id\": \"2dba4797b5eb0276eeb7b043c93be541\",\n        \"source_id\": \"newsapi\",\n        \"title\": \"Texas Governor Directs Review of Chinese-Made Medical Device Cybersecurity   - NaturalNews.com\",\n        \"description\": \"The directive was issued in a letter to Texas state agencies on March 9.\",\n        \"content\": \"The directive was issued in a letter to Texas state agencies on March 9. Governor Abbott ordered agencies to 'review cybersecurity vulnerabilities' associated with medical devices manufactured in the People's Republic of China, according to a summary of the order [8]. The order applies to all state agencies and publicly funded medical facilities across Texas. The initial announcement did not name specific manufacturers or device models, focusing instead on a broad review of the supply chain. Governor Abbott stated, 'I will not let Communist China spy on Texans,' according to a report on the directive [9].\\n\\nGovernor Abbott's letter referenced existing federal warnings about medical device cybersecurity. U.S. cybersecurity and health agencies have previously issued advisories about vulnerabilities in connected medical equipment [4]. The concerns primarily focus on devices that collect, store, and transmit sensitive patient health data. Officials have warned that such vulnerabilities could potentially allow unauthorized access to this information or even remote manipulation of the devices themselves [2]. The directive specifically references warnings issued by the U.S. Food and Drug Administration, according to one report [10].\\n\\nCybersecurity analysts note that medical devices are increasingly connected to hospital networks and the broader internet, creating a larger attack surface. The Internet of Things (IoT) spans a broad range of technology, and a forecast predicts there will be roughly 42 billion connected IoT devices by 2025 [5]. Experts say vulnerabilities in these systems could potentially allow data exfiltration or malicious device manipulation. Industry representatives have often stated that manufacturers follow established regulatory cybersecurity requirements. However, some security researchers argue that supply chain transparency and the proprietary nature of device software remain significant challenges for healthcare systems seeking to verify security claims [1]. The integration of devices into the 'Internet of Bodies' ecosystem has been identified as posing potentially grave risks [3].\\n\\nThe directive may influence future state procurement policies for medical equipment. Governor Abbott has taken previous actions to combat cyber threats from foreign actors, including expanding a list of banned technologies for state employees earlier in 2026 [7]. Other states have considered similar reviews of technology supply chains, particularly for critical infrastructure. Federal regulations already require medical device manufacturers to address cybersecurity risks, but state-level actions can impose additional procurement standards [2]. The findings from Texas's review will inform potential future state-level actions, officials said.\\n\\nThe review ordered by Governor Abbott underscores growing governmental scrutiny over the cybersecurity of connected medical devices, especially those manufactured in geopolitical adversary nations. The action aligns with a broader trend of examining technology supply chains for national and data security risks. The outcome of the state's audit and any subsequent policy changes will be watched by other states and the healthcare industry. As one book on technology and society notes, the increasing integration of devices raises questions about control and ownership, even in life-saving medical applications [6].\",\n        \"url\": \"https://www.naturalnews.com/2026-03-14-texas-governor-review-chinese-made-medical-device.html\",\n        \"image_url\": \"https://www.naturalnews.com/wp-content/uploads/sites/91/2026/03/online_medical_device.jpg\",\n        \"author\": null,\n        \"category\": \"Health\",\n        \"source_name\": \"News Api\",\n        \"published_at\": \"2026-03-14T13:01:37.000000Z\",\n        \"created_at\": \"2026-03-14T13:05:21.000000Z\",\n        \"updated_at\": \"2026-03-14T13:06:39.000000Z\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "List Sources",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/articles/sources",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"articles",
+								"sources"
+							]
+						},
+						"description": "Returns the distinct news sources currently present in the database, along with their human-readable names and article counts.\n\nUseful for building a source-picker in the frontend (user preference: select which sources to follow)."
+					},
+					"response": [
+						{
+							"name": "List Sources",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/articles/sources",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"articles",
+										"sources"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.3.11"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 14 Mar 2026 13:08:31 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": [\n        {\n            \"source_id\": \"newsapi\",\n            \"source_name\": \"News Api\",\n            \"article_count\": 30\n        },\n        {\n            \"source_id\": \"guardian\",\n            \"source_name\": \"The Guardian\",\n            \"article_count\": 25\n        },\n        {\n            \"source_id\": \"nytimes\",\n            \"source_name\": \"The New York Times\",\n            \"article_count\": 40\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "List Categories",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/articles/categories",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"articles",
+								"categories"
+							]
+						},
+						"description": "Returns all distinct, non-null categories present in the database with their article counts, sorted alphabetically.\n\nUseful for building a category filter or topic-preference selector in the frontend."
+					},
+					"response": [
+						{
+							"name": "List Categories",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/articles/categories",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"articles",
+										"categories"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.3.11"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 14 Mar 2026 12:48:11 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"name": "Content-Type",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [
+								{
+									"expires": "Invalid Date",
+									"domain": "",
+									"path": ""
+								}
+							],
+							"body": "{\n    \"data\": [\n        {\n            \"category\": \"Arts\",\n            \"article_count\": 2\n        },\n        {\n            \"category\": \"Australia news\",\n            \"article_count\": 4\n        },\n        {\n            \"category\": \"Books\",\n            \"article_count\": 2\n        },\n        {\n            \"category\": \"Briefing\",\n            \"article_count\": 1\n        },\n        {\n            \"category\": \"Business\",\n            \"article_count\": 8\n        },\n        {\n            \"category\": \"Climate\",\n            \"article_count\": 1\n        },\n        {\n            \"category\": \"Culture\",\n            \"article_count\": 1\n        },\n        {\n            \"category\": \"Education\",\n            \"article_count\": 1\n        },\n        {\n            \"category\": \"En español\",\n            \"article_count\": 4\n        },\n        {\n            \"category\": \"Environment\",\n            \"article_count\": 2\n        },\n        {\n            \"category\": \"Gameplay\",\n            \"article_count\": 3\n        },\n        {\n            \"category\": \"Health\",\n            \"article_count\": 1\n        },\n        {\n            \"category\": \"Magazine\",\n            \"article_count\": 2\n        },\n        {\n            \"category\": \"Movies\",\n            \"article_count\": 2\n        },\n        {\n            \"category\": \"News\",\n            \"article_count\": 1\n        },\n        {\n            \"category\": \"Opinion\",\n            \"article_count\": 9\n        },\n        {\n            \"category\": \"Politics\",\n            \"article_count\": 2\n        },\n        {\n            \"category\": \"Priceless Experiences With Mastercard\",\n            \"article_count\": 1\n        },\n        {\n            \"category\": \"Real Estate\",\n            \"article_count\": 1\n        },\n        {\n            \"category\": \"Science\",\n            \"article_count\": 2\n        },\n        {\n            \"category\": \"Technology\",\n            \"article_count\": 3\n        },\n        {\n            \"category\": \"Times Insider\",\n            \"article_count\": 1\n        },\n        {\n            \"category\": \"UK news\",\n            \"article_count\": 1\n        },\n        {\n            \"category\": \"U.S.\",\n            \"article_count\": 2\n        },\n        {\n            \"category\": \"US news\",\n            \"article_count\": 2\n        },\n        {\n            \"category\": \"Weather\",\n            \"article_count\": 1\n        },\n        {\n            \"category\": \"World\",\n            \"article_count\": 5\n        },\n        {\n            \"category\": \"World news\",\n            \"article_count\": 1\n        }\n    ]\n}"
+						}
+					]
+				}
+			],
+			"description": "Endpoints for retrieving news articles with search, filtering, and pagination support."
+		},
+		{
+			"name": "Preference-Driven Queries (Examples)",
+			"item": [
+				{
+					"name": "User Preference — by saved sources",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/articles?source=guardian,nytimes&per_page=20&order=desc",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"articles"
+							],
+							"query": [
+								{
+									"key": "source",
+									"value": "guardian,nytimes",
+									"description": "select options from [newsapi, guardian, nytimes ]"
+								},
+								{
+									"key": "per_page",
+									"value": "20"
+								},
+								{
+									"key": "order",
+									"value": "desc"
+								}
+							]
+						},
+						"description": "Simulates a user who has selected The Guardian and NYT as their preferred sources. The frontend stores `[\"guardian\",\"nytimes\"]` and joins them into a single comma-separated query param."
+					},
+					"response": []
+				},
+				{
+					"name": "User Preference — by saved categories",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/articles?category=Technology,Science,Business&per_page=20",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"articles"
+							],
+							"query": [
+								{
+									"key": "category",
+									"value": "Technology,Science,Business"
+								},
+								{
+									"key": "per_page",
+									"value": "20"
+								}
+							]
+						},
+						"description": "Simulates a user who follows Technology, Science, and Business topics. Multiple categories are comma-separated."
+					},
+					"response": []
+				},
+				{
+					"name": "User Preference — by favourite author",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/articles?author=Hannah&per_page=20",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"articles"
+							],
+							"query": [
+								{
+									"key": "author",
+									"value": "Hannah"
+								},
+								{
+									"key": "per_page",
+									"value": "20"
+								}
+							]
+						},
+						"description": "Partial author name match. The frontend can store a list of preferred authors and pass each in a separate request, or implement a combined view."
+					},
+					"response": []
+				},
+				{
+					"name": "Search — keyword + date range",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/articles?q=climate change&from=2026-03-01&to=2026-03-14&sort=published_at&order=desc",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"articles"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "climate change"
+								},
+								{
+									"key": "from",
+									"value": "2026-03-01"
+								},
+								{
+									"key": "to",
+									"value": "2026-03-14"
+								},
+								{
+									"key": "sort",
+									"value": "published_at"
+								},
+								{
+									"key": "order",
+									"value": "desc"
+								}
+							]
+						},
+						"description": "Full-text keyword search constrained to a date range. Matches against title, description, and content."
+					},
+					"response": []
+				},
+				{
+					"name": "Combined — search + source + category",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/articles?q=artificial intelligence&source=guardian&category=Technology&per_page=10&order=desc",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"articles"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "artificial intelligence"
+								},
+								{
+									"key": "source",
+									"value": "guardian"
+								},
+								{
+									"key": "category",
+									"value": "Technology"
+								},
+								{
+									"key": "per_page",
+									"value": "10"
+								},
+								{
+									"key": "order",
+									"value": "desc"
+								}
+							]
+						},
+						"description": "Demonstrates stacking all filter types simultaneously. All parameters are AND-combined."
+					},
+					"response": []
+				}
+			],
+			"description": "These are not separate endpoints — they are pre-configured calls to `GET /api/articles` that demonstrate how the frontend can pass user preference data (saved sources, categories, authors) as query parameters."
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		}
+	]
+}
