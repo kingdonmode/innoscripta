@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::create('articles', function (Blueprint $table) {
             $table->id();
             $table->string('external_id', 64)->index();
-            $table->string('source_id', 20)->index(); // 'newsapi', 'nytimes', 'guardian'
+            $table->string('source', 20)->index(); // 'newsapi', 'nytimes', 'guardian'
             $table->string('title');
             $table->text('description')->nullable();
             $table->longText('content')->nullable();
@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('source_name')->nullable();
             $table->timestamp('published_at')->index();
             $table->timestamps();
-            $table->unique(['source_id', 'external_id'], 'articles_source_external_unique');
+            $table->unique(['source', 'external_id'], 'articles_source_external_unique');
         });
     }
 

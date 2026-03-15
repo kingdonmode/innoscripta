@@ -18,7 +18,7 @@ class FetchSourceArticlesJobTest extends TestCase
     {
         return [
             'external_id'  => md5(uniqid()),
-            'source_id'    => $sourceId,
+            'source'    => $sourceId,
             'title'        => 'Test headline',
             'description'  => 'Summary text.',
             'content'      => 'Full body.',
@@ -77,7 +77,7 @@ class FetchSourceArticlesJobTest extends TestCase
         $job = new FetchSourceArticles($class, []);
         $job->handle(new ArticleRepository());
 
-        $this->assertDatabaseHas('articles', ['source_id' => 'nytimes']);
+        $this->assertDatabaseHas('articles', ['source' => 'nytimes']);
         $this->assertDatabaseCount('articles', 2);
     }
 

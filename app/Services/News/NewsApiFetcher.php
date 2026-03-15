@@ -92,7 +92,7 @@ class NewsApiFetcher implements NewsFetcherInterface
 
         return [
             'external_id'  => md5($item['url'] ?? uniqid('newsapi_', true)),
-            'source_id'    => $this->getSourceId(),
+            'source'       => $this->getSourceId(),
             'title'        => $item['title']            ?? '',
             'description'  => $description,
             'content'      => $body,

@@ -44,8 +44,8 @@ class ArticleRepository
     public function allSources(): Collection
     {
         return Article::query()
-            ->selectRaw('source_id, source_name, COUNT(*) as article_count')
-            ->groupBy('source_id', 'source_name')
+            ->selectRaw('source, source_name, COUNT(*) as article_count')
+            ->groupBy('source', 'source_name')
             ->orderBy('source_name')
             ->get();
     }
@@ -100,7 +100,7 @@ class ArticleRepository
             $rows,
             ['url'],
             [
-                'source_id', 'external_id', 'title', 'description',
+                'source', 'external_id', 'title', 'description',
                 'content', 'image_url', 'author', 'category',
                 'source_name', 'published_at', 'updated_at',
             ]
@@ -119,7 +119,7 @@ class ArticleRepository
 
         return [
             'external_id'  => $article['external_id'],
-            'source_id'    => $article['source_id'],
+            'source'       => $article['source'],
             'title'        => mb_substr((string) ($article['title'] ?? ''), 0, 255),
             'description'  => $article['description'] ?? null,
             'content'      => $article['content'] ?? null,

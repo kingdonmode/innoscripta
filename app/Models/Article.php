@@ -3,13 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Article extends Model
 {
+    use HasFactory;
     protected $fillable = [
         'external_id',
-        'source_id',
+        'source',
         'title',
         'description',
         'content',
@@ -50,7 +52,7 @@ class Article extends Model
 
         $ids = array_filter(array_map('trim', explode(',', $source)));
 
-        return empty($ids) ? $query : $query->whereIn('source_id', $ids);
+        return empty($ids) ? $query : $query->whereIn('source', $ids);
     }
 
     public function scopeForCategory(Builder $query, ?string $category): Builder

@@ -4,7 +4,6 @@ namespace Tests\Unit;
 
 use App\Models\Article;
 use App\Repositories\ArticleRepository;
-use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -20,26 +19,9 @@ class ArticleRepositoryTest extends TestCase
         $this->repository = new ArticleRepository();
     }
 
-    private function sampleArticle(array $overrides = []): array
-    {
-        return array_merge([
-            'external_id'  => md5(uniqid()),
-            'source_id'    => 'newsapi',
-            'title'        => 'Test headline',
-            'description'  => 'Short summary.',
-            'content'      => 'Full body text.',
-            'url'          => 'https://example.com/' . uniqid(),
-            'image_url'    => null,
-            'author'       => 'Reporter Name',
-            'category'     => 'technology',
-            'source_name'  => 'NewsAPI',
-            'published_at' => Carbon::now()->subMinutes(30),
-        ], $overrides);
-    }
-
     public function test_upsert_batch_inserts_new_articles(): void
     {
-        $articles = collect([$this->sampleArticle(), $this->sampleArticle()]);
+        $articles = Article::factory()->count(2)->make()->map(fn(Article $a) => $a->toArray());
 
         $saved = $this->repository->upsertBatch($articles);
 
@@ -51,10 +33,10 @@ class ArticleRepositoryTest extends TestCase
     {
         $sharedUrl = 'https://example.com/same-article';
 
-        $original = $this->sampleArticle(['url' => $sharedUrl, 'title' => 'Old title']);
+        $original = Article::factory()->make(['url' => $sharedUrl, 'title' => 'Old title'])->toArray();
         $this->repository->upsertBatch(collect([$original]));
 
-        $updated = $this->sampleArticle(['url' => $sharedUrl, 'title' => 'Updated title']);
+        $updated = Article::factory()->make(['url' => $sharedUrl, 'title' => 'Updated title'])->toArray();
         $this->repository->upsertBatch(collect([$updated]));
 
         $this->assertSame(1, Article::count());
@@ -63,8 +45,8 @@ class ArticleRepositoryTest extends TestCase
 
     public function test_upsert_batch_skips_articles_missing_url(): void
     {
-        $bad  = $this->sampleArticle(['url' => '']);
-        $good = $this->sampleArticle();
+        $bad  = Article::factory()->make(['url' => ''])->toArray();
+        $good = Article::factory()->make()->toArray();
 
         $saved = $this->repository->upsertBatch(collect([$bad, $good]));
 
@@ -74,7 +56,7 @@ class ArticleRepositoryTest extends TestCase
 
     public function test_upsert_batch_skips_articles_missing_title(): void
     {
-        $bad = $this->sampleArticle(['title' => '']);
+        $bad = Article::factory()->make(['title' => ''])->toArray();
 
         $saved = $this->repository->upsertBatch(collect([$bad]));
 
@@ -91,7 +73,7 @@ class ArticleRepositoryTest extends TestCase
 
     public function test_upsert_batch_truncates_oversized_title(): void
     {
-        $article = $this->sampleArticle(['title' => str_repeat('x', 300)]);
+        $article = Article::factory()->make(['title' => str_repeat('x', 300)])->toArray();
 
         $this->repository->upsertBatch(collect([$article]));
 

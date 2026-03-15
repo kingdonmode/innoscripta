@@ -110,7 +110,7 @@ class GuardianApiFetcher implements NewsFetcherInterface
 
     return [
       'external_id'   => md5($item['id'] ?? $item['webUrl'] ?? uniqid('guardian_', true)),
-      'source_id'     => $this->getSourceId(),
+      'source'        => $this->getSourceId(),
       'title'         => $fields['headline'] ?? $item['webTitle'] ?? '',
       'description'   => $fields['trailText'] ?? $fields['standfirst'] ?? '',
       'content'       => $fields['bodyText'] ?? '',

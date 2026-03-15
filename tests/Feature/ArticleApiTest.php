@@ -11,40 +11,18 @@ class ArticleApiTest extends TestCase
     use RefreshDatabase;
 
     // -------------------------------------------------------------------------
-    // Helpers
-    // -------------------------------------------------------------------------
-
-    private function makeArticle(array $overrides = []): Article
-    {
-        return Article::create(array_merge([
-            'external_id'  => md5(uniqid()),
-            'source_id'    => 'newsapi',
-            'title'        => 'Sample article title',
-            'description'  => 'A short description.',
-            'content'      => 'Full article content here.',
-            'url'          => 'https://example.com/' . uniqid(),
-            'image_url'    => null,
-            'author'       => 'Jane Doe',
-            'category'     => 'technology',
-            'source_name'  => 'NewsAPI',
-            'published_at' => now()->subHour(),
-        ], $overrides));
-    }
-
-    // -------------------------------------------------------------------------
-    // GET /api/articles
+    // GET /api/v1/articles
     // -------------------------------------------------------------------------
 
     public function test_articles_index_returns_paginated_json(): void
     {
-        $this->makeArticle();
-        $this->makeArticle(['title' => 'Another piece']);
+        Article::factory()->count(2)->create();
 
         $response = $this->getJson('/api/v1/articles');
 
         $response->assertOk()
                  ->assertJsonStructure([
-                     'data'         => [['id', 'title', 'source_id', 'published_at']],
+                     'data'         => [['id', 'title', 'source', 'published_at']],
                      'current_page',
                      'per_page',
                      'total',
@@ -61,8 +39,8 @@ class ArticleApiTest extends TestCase
 
     public function test_search_filters_by_title_keyword(): void
     {
-        $this->makeArticle(['title' => 'Laravel is fantastic']);
-        $this->makeArticle(['title' => 'Vue.js guide']);
+        Article::factory()->create(['title' => 'Laravel is fantastic']);
+        Article::factory()->create(['title' => 'Vue.js guide']);
 
         $response = $this->getJson('/api/v1/articles?q=Laravel');
 
@@ -73,8 +51,8 @@ class ArticleApiTest extends TestCase
 
     public function test_search_filters_by_description_keyword(): void
     {
-        $this->makeArticle(['description' => 'Deep dive into Redis caching']);
-        $this->makeArticle(['description' => 'Intro to containers']);
+        Article::factory()->create(['description' => 'Deep dive into Redis caching']);
+        Article::factory()->create(['description' => 'Intro to containers']);
 
         $response = $this->getJson('/api/v1/articles?q=Redis');
 
@@ -84,21 +62,21 @@ class ArticleApiTest extends TestCase
 
     public function test_filter_by_single_source(): void
     {
-        $this->makeArticle(['source_id' => 'guardian']);
-        $this->makeArticle(['source_id' => 'nytimes']);
+        Article::factory()->create(['source' => 'guardian']);
+        Article::factory()->create(['source' => 'nytimes']);
 
         $response = $this->getJson('/api/v1/articles?source=guardian');
 
         $response->assertOk()
                  ->assertJsonPath('total', 1)
-                 ->assertJsonFragment(['source_id' => 'guardian']);
+                 ->assertJsonFragment(['source' => 'guardian']);
     }
 
     public function test_filter_by_multiple_sources(): void
     {
-        $this->makeArticle(['source_id' => 'guardian']);
-        $this->makeArticle(['source_id' => 'nytimes']);
-        $this->makeArticle(['source_id' => 'newsapi']);
+        Article::factory()->create(['source' => 'guardian']);
+        Article::factory()->create(['source' => 'nytimes']);
+        Article::factory()->create(['source' => 'newsapi']);
 
         $response = $this->getJson('/api/v1/articles?source=guardian,nytimes');
 
@@ -108,8 +86,8 @@ class ArticleApiTest extends TestCase
 
     public function test_filter_by_category(): void
     {
-        $this->makeArticle(['category' => 'technology']);
-        $this->makeArticle(['category' => 'sports']);
+        Article::factory()->create(['category' => 'technology']);
+        Article::factory()->create(['category' => 'sports']);
 
         $response = $this->getJson('/api/v1/articles?category=sports');
 
@@ -120,8 +98,8 @@ class ArticleApiTest extends TestCase
 
     public function test_filter_by_single_author(): void
     {
-        $this->makeArticle(['author' => 'Alice Smith']);
-        $this->makeArticle(['author' => 'Bob Jones']);
+        Article::factory()->create(['author' => 'Alice Smith']);
+        Article::factory()->create(['author' => 'Bob Jones']);
 
         $response = $this->getJson('/api/v1/articles?author=Alice+Smith');
 
@@ -132,9 +110,9 @@ class ArticleApiTest extends TestCase
 
     public function test_filter_by_multiple_authors(): void
     {
-        $this->makeArticle(['author' => 'Alice Smith']);
-        $this->makeArticle(['author' => 'Bob Jones']);
-        $this->makeArticle(['author' => 'Carol White']);
+        Article::factory()->create(['author' => 'Alice Smith']);
+        Article::factory()->create(['author' => 'Bob Jones']);
+        Article::factory()->create(['author' => 'Carol White']);
 
         $response = $this->getJson('/api/v1/articles?author=Alice+Smith,Bob+Jones');
 
@@ -144,7 +122,7 @@ class ArticleApiTest extends TestCase
 
     public function test_filter_by_author_partial_name_returns_no_results(): void
     {
-        $this->makeArticle(['author' => 'Alice Smith']);
+        Article::factory()->create(['author' => 'Alice Smith']);
 
         $response = $this->getJson('/api/v1/articles?author=Alice');
 
@@ -154,10 +132,9 @@ class ArticleApiTest extends TestCase
 
     public function test_authors_returns_distinct_non_null_authors(): void
     {
-        $this->makeArticle(['author' => 'Alice Smith']);
-        $this->makeArticle(['author' => 'Alice Smith']);
-        $this->makeArticle(['author' => 'Bob Jones']);
-        $this->makeArticle(['author' => null]);
+        Article::factory()->count(2)->create(['author' => 'Alice Smith']);
+        Article::factory()->create(['author' => 'Bob Jones']);
+        Article::factory()->create(['author' => null]);
 
         $response = $this->getJson('/api/v1/articles/authors');
 
@@ -167,9 +144,9 @@ class ArticleApiTest extends TestCase
 
     public function test_filter_by_date_range(): void
     {
-        $this->makeArticle(['published_at' => '2024-01-10 12:00:00']);
-        $this->makeArticle(['published_at' => '2024-06-15 12:00:00']);
-        $this->makeArticle(['published_at' => '2024-12-20 12:00:00']);
+        Article::factory()->create(['published_at' => '2024-01-10 12:00:00']);
+        Article::factory()->create(['published_at' => '2024-06-15 12:00:00']);
+        Article::factory()->create(['published_at' => '2024-12-20 12:00:00']);
 
         $response = $this->getJson('/api/v1/articles?from=2024-01-01&to=2024-07-01');
 
@@ -179,9 +156,7 @@ class ArticleApiTest extends TestCase
 
     public function test_per_page_param_controls_pagination(): void
     {
-        for ($i = 0; $i < 5; $i++) {
-            $this->makeArticle();
-        }
+        Article::factory()->count(5)->create();
 
         $response = $this->getJson('/api/v1/articles?per_page=2');
 
@@ -205,12 +180,12 @@ class ArticleApiTest extends TestCase
     }
 
     // -------------------------------------------------------------------------
-    // GET /api/articles/{id}
+    // GET /api/v1/articles/{id}
     // -------------------------------------------------------------------------
 
     public function test_show_returns_single_article(): void
     {
-        $article = $this->makeArticle(['title' => 'Specific article']);
+        $article = Article::factory()->create(['title' => 'Specific article']);
 
         $response = $this->getJson("/api/v1/articles/{$article->id}");
 
@@ -227,14 +202,13 @@ class ArticleApiTest extends TestCase
     }
 
     // -------------------------------------------------------------------------
-    // GET /api/articles/sources
+    // GET /api/v1/articles/sources
     // -------------------------------------------------------------------------
 
     public function test_sources_returns_distinct_sources(): void
     {
-        $this->makeArticle(['source_id' => 'newsapi', 'source_name' => 'NewsAPI']);
-        $this->makeArticle(['source_id' => 'newsapi', 'source_name' => 'NewsAPI']);
-        $this->makeArticle(['source_id' => 'guardian', 'source_name' => 'The Guardian']);
+        Article::factory()->count(2)->create(['source' => 'newsapi', 'source_name' => 'NewsAPI']);
+        Article::factory()->create(['source' => 'guardian', 'source_name' => 'The Guardian']);
 
         $response = $this->getJson('/api/v1/articles/sources');
 
@@ -243,15 +217,14 @@ class ArticleApiTest extends TestCase
     }
 
     // -------------------------------------------------------------------------
-    // GET /api/articles/categories
+    // GET /api/v1/articles/categories
     // -------------------------------------------------------------------------
 
     public function test_categories_returns_distinct_non_null_categories(): void
     {
-        $this->makeArticle(['category' => 'technology']);
-        $this->makeArticle(['category' => 'technology']);
-        $this->makeArticle(['category' => 'world']);
-        $this->makeArticle(['category' => null]);
+        Article::factory()->count(2)->create(['category' => 'technology']);
+        Article::factory()->create(['category' => 'world']);
+        Article::factory()->create(['category' => null]);
 
         $response = $this->getJson('/api/v1/articles/categories');
 

@@ -119,7 +119,7 @@ class NytimesFetcher implements NewsFetcherInterface
 
     return [
       'external_id'   => md5($item['url'] ?? uniqid('nytimes_', true)),
-      'source_id'     => $this->getSourceId(),
+      'source'        => $this->getSourceId(),
       'title'         => $item['title']  ?? '',
       'description'   => $abstract,
       'content'       => $content,
