@@ -4,43 +4,47 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ArticleFilterRequest;
+use App\Http\Resources\ArticleResource;
+use App\Http\Resources\AuthorResource;
+use App\Http\Resources\CategoryResource;
+use App\Http\Resources\SourceResource;
 use App\Models\Article;
 use App\Repositories\ArticleRepository;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class ArticleController extends Controller
 {
     public function __construct(private readonly ArticleRepository $articles) {}
 
-    /** GET /api/articles */
-    public function index(ArticleFilterRequest $request): JsonResponse
+    /** GET /api/v1/articles */
+    public function index(ArticleFilterRequest $request): AnonymousResourceCollection
     {
-        return response()->json(
+        return ArticleResource::collection(
             $this->articles->paginate($request->validated())
         );
     }
 
-    /** GET /api/articles/{article} */
-    public function show(Article $article): JsonResponse
+    /** GET /api/v1/articles/{article} */
+    public function show(Article $article): ArticleResource
     {
-        return response()->json(['data' => $article]);
+        return new ArticleResource($article);
     }
 
-    /** GET /api/articles/sources */
-    public function sources(): JsonResponse
+    /** GET /api/v1/articles/sources */
+    public function sources(): AnonymousResourceCollection
     {
-        return response()->json(['data' => $this->articles->allSources()]);
+        return SourceResource::collection($this->articles->allSources());
     }
 
-    /** GET /api/articles/categories */
-    public function categories(): JsonResponse
+    /** GET /api/v1/articles/categories */
+    public function categories(): AnonymousResourceCollection
     {
-        return response()->json(['data' => $this->articles->allCategories()]);
+        return CategoryResource::collection($this->articles->allCategories());
     }
 
-    /** GET /api/articles/authors */
-    public function authors(): JsonResponse
+    /** GET /api/v1/articles/authors */
+    public function authors(): AnonymousResourceCollection
     {
-        return response()->json(['data' => $this->articles->allAuthors()]);
+        return AuthorResource::collection($this->articles->allAuthors());
     }
 }

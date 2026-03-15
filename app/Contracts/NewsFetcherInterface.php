@@ -2,25 +2,27 @@
 
 namespace App\Contracts;
 
-use Illuminate\Support\Collection;
+use App\DTOs\ArticleDto;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 
 interface NewsFetcherInterface
 {
-  /**
-   * Fetch recent articles (e.g., last 24h or since last fetch).
-   *
-   * @param array $options  e.g. ['query' => 'tech', 'from' => Carbon, 'page' => 1, 'pageSize' => 50]
-   * @return Collection     standardized article items
-   */
-  public function fetch(array $options = []): Collection;
+    /**
+     * Fetch recent articles from the source.
+     *
+     * @param  array $options  e.g. ['query' => 'tech', 'from' => Carbon, 'page' => 1, 'pageSize' => 50]
+     * @return Collection<int, ArticleDto>
+     */
+    public function fetch(array $options = []): Collection;
 
-  /**
-   * Normalize raw API response to consistent format.
-   * Every fetcher must return articles in this shape.
-   */
-  public function normalize(array $rawArticle): array;
+    /**
+     * Normalize a single raw API response item into a typed DTO.
+     */
+    public function normalize(array $rawArticle): ArticleDto;
 
-  public function getSourceName(): string;
-  public function getSourceId(): string; // slug, e.g. 'newsapi', 'guardian', 'nytimes'
+    public function getSourceName(): string;
+
+    /** Slug identifier, e.g. 'newsapi', 'guardian', 'nytimes' */
+    public function getSourceId(): string;
 }

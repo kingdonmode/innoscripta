@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Contracts\NewsFetcherInterface;
+use App\DTOs\ArticleDto;
 use App\Jobs\FetchSourceArticles;
 use App\Repositories\ArticleRepository;
 use Carbon\Carbon;
@@ -14,26 +15,21 @@ class FetchSourceArticlesJobTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function sampleArticle(string $sourceId): array
-    {
-        return [
-            'external_id'  => md5(uniqid()),
-            'source'    => $sourceId,
-            'title'        => 'Test headline',
-            'description'  => 'Summary text.',
-            'content'      => 'Full body.',
-            'url'          => 'https://example.com/' . uniqid(),
-            'image_url'    => null,
-            'author'       => null,
-            'category'     => null,
-            'source_name'  => ucfirst($sourceId),
-            'published_at' => Carbon::now(),
-        ];
-    }
-
     private function bindFetcher(string $sourceId, int $count, array $options = []): string
     {
-        $articles = collect(array_map(fn() => $this->sampleArticle($sourceId), range(1, $count)));
+        $articles = collect(array_map(fn() => new ArticleDto(
+            externalId:  md5(uniqid()),
+            source:      $sourceId,
+            title:       'Test headline',
+            description: 'Summary text.',
+            content:     'Full body.',
+            url:         'https://example.com/' . uniqid(),
+            imageUrl:    null,
+            author:      null,
+            category:    null,
+            sourceName:  ucfirst($sourceId),
+            publishedAt: Carbon::now(),
+        ), range(1, $count)));
 
         $fetcher = Mockery::mock(NewsFetcherInterface::class);
         $fetcher->shouldReceive('fetch')->with($options)->andReturn($articles);

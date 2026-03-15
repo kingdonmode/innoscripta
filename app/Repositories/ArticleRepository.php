@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\DTOs\ArticleDto;
 use App\Models\Article;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
@@ -77,8 +78,10 @@ class ArticleRepository
     // -------------------------------------------------------------------------
 
     /**
-     * Upsert a batch of normalized article arrays.
+     * Upsert a batch of ArticleDto objects.
      * Deduplicates on `url`; returns the number of rows processed.
+     *
+     * @param Collection<int, ArticleDto> $articles
      */
     public function upsertBatch(Collection $articles): int
     {
@@ -87,8 +90,8 @@ class ArticleRepository
         }
 
         $rows = $articles
-            ->filter(fn(array $a) => !empty($a['url']) && !empty($a['title']))
-            ->map(fn(array $a) => $this->prepareRow($a))
+            ->filter(fn(ArticleDto $dto) => $dto->url !== '' && $dto->title !== '')
+            ->map($this->prepareRow(...))
             ->values()
             ->all();
 
@@ -106,31 +109,29 @@ class ArticleRepository
             ]
         );
 
-        return count($rows);
+        return \count($rows);
     }
 
     // -------------------------------------------------------------------------
     // Private helpers
     // -------------------------------------------------------------------------
 
-    private function prepareRow(array $article): array
+    private function prepareRow(ArticleDto $dto): array
     {
         $now = now()->toDateTimeString();
 
         return [
-            'external_id'  => $article['external_id'],
-            'source'       => $article['source'],
-            'title'        => mb_substr((string) ($article['title'] ?? ''), 0, 255),
-            'description'  => $article['description'] ?? null,
-            'content'      => $article['content'] ?? null,
-            'url'          => $article['url'],
-            'image_url'    => $article['image_url'] ?? null,
-            'author'       => $article['author'] ? mb_substr((string) $article['author'], 0, 255) : null,
-            'category'     => $article['category'] ? mb_substr((string) $article['category'], 0, 255) : null,
-            'source_name'  => $article['source_name'] ?? null,
-            'published_at' => isset($article['published_at'])
-                ? (string) $article['published_at']
-                : $now,
+            'external_id'  => $dto->externalId,
+            'source'       => $dto->source,
+            'title'        => mb_substr($dto->title, 0, 255),
+            'description'  => $dto->description,
+            'content'      => $dto->content,
+            'url'          => $dto->url,
+            'image_url'    => $dto->imageUrl,
+            'author'       => $dto->author ? mb_substr($dto->author, 0, 255) : null,
+            'category'     => $dto->category ? mb_substr($dto->category, 0, 255) : null,
+            'source_name'  => $dto->sourceName,
+            'published_at' => (string) $dto->publishedAt,
             'created_at'   => $now,
             'updated_at'   => $now,
         ];

@@ -219,7 +219,7 @@ php artisan test
 The test suite uses an in-memory SQLite database — no additional configuration is needed.
 
 ```
-Tests:  30 passed
+Tests:  44 passed
 ```
 
 ---
@@ -228,7 +228,7 @@ Tests:  30 passed
 
 **Base URL:** `http://localhost:8000/api`
 
-All responses are JSON. List endpoints return Laravel's standard paginator envelope.
+All responses are JSON. List endpoints return items in `data`; paginated lists include a `links` object (navigation) and a `meta` object (pagination counters).
 
 ---
 
@@ -265,12 +265,10 @@ GET /api/v1/articles?q=artificial+intelligence&source=guardian&from=2024-06-01&p
 
 ```json
 {
-  "current_page": 1,
   "data": [
     {
       "id": 42,
-      "external_id": "a1b2c3d4...",
-      "source_id": "guardian",
+      "source": "guardian",
       "source_name": "The Guardian",
       "title": "AI regulation moves forward in Europe",
       "description": "EU lawmakers have approved...",
@@ -279,15 +277,24 @@ GET /api/v1/articles?q=artificial+intelligence&source=guardian&from=2024-06-01&p
       "image_url": "https://media.guim.co.uk/...",
       "author": "Alex Hern",
       "category": "Technology",
-      "published_at": "2024-06-10T09:30:00.000000Z",
-      "created_at": "2024-06-10T10:00:00.000000Z",
-      "updated_at": "2024-06-10T10:00:00.000000Z"
+      "published_at": "2024-06-10T09:30:00.000000Z"
     }
   ],
-  "per_page": 10,
-  "total": 84,
-  "last_page": 9,
-  ...
+  "links": {
+    "first": "http://localhost:8000/api/v1/articles?page=1",
+    "last": "http://localhost:8000/api/v1/articles?page=9",
+    "prev": null,
+    "next": "http://localhost:8000/api/v1/articles?page=2"
+  },
+  "meta": {
+    "current_page": 1,
+    "from": 1,
+    "last_page": 9,
+    "path": "http://localhost:8000/api/v1/articles",
+    "per_page": 10,
+    "to": 10,
+    "total": 84
+  }
 }
 ```
 
@@ -305,9 +312,16 @@ GET /api/v1/articles/{id}
 {
   "data": {
     "id": 42,
-    "source_id": "guardian",
+    "source": "guardian",
+    "source_name": "The Guardian",
     "title": "AI regulation moves forward in Europe",
-    ...
+    "description": "EU lawmakers have approved...",
+    "content": "Full article body...",
+    "url": "https://theguardian.com/...",
+    "image_url": "https://media.guim.co.uk/...",
+    "author": "Alex Hern",
+    "category": "Technology",
+    "published_at": "2024-06-10T09:30:00.000000Z"
   }
 }
 ```
@@ -329,9 +343,9 @@ Returns all news sources that have stored articles, along with an article count.
 ```json
 {
   "data": [
-    { "source_id": "guardian",  "source_name": "The Guardian",        "article_count": 25 },
-    { "source_id": "newsapi",   "source_name": "News Api",            "article_count": 30 },
-    { "source_id": "nytimes",   "source_name": "The New York Times",  "article_count": 40 }
+    { "source": "guardian",  "source_name": "The Guardian",        "article_count": 25 },
+    { "source": "newsapi",   "source_name": "News Api",            "article_count": 30 },
+    { "source": "nytimes",   "source_name": "The New York Times",  "article_count": 40 }
   ]
 }
 ```
@@ -391,12 +405,19 @@ app/
 ├── Console/
 │   └── Commands/
 │       └── FetchNewsArticles.php     # php artisan news:fetch (dry-run / sync / queue)
+├── DTOs/
+│   └── ArticleDto.php                # Typed DTO returned by all fetchers
 ├── Http/
 │   ├── Controllers/
 │   │   └── Api/
 │   │       └── ArticleController.php
-│   └── Requests/
-│       └── ArticleFilterRequest.php  # Input validation
+│   ├── Requests/
+│   │   └── ArticleFilterRequest.php  # Input validation
+│   └── Resources/
+│       ├── ArticleResource.php
+│       ├── AuthorResource.php
+│       ├── CategoryResource.php
+│       └── SourceResource.php
 ├── Jobs/
 │   └── FetchSourceArticles.php       # Queued job — one per news source, retries up to 3×
 ├── Models/

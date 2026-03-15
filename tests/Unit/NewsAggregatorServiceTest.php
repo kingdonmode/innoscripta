@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Contracts\NewsFetcherInterface;
+use App\DTOs\ArticleDto;
 use App\Repositories\ArticleRepository;
 use App\Services\News\NewsAggregatorService;
 use Carbon\Carbon;
@@ -21,27 +22,27 @@ class NewsAggregatorServiceTest extends TestCase
         return $mock;
     }
 
-    private function sampleArticle(string $sourceId): array
+    private function makeDto(string $source): ArticleDto
     {
-        return [
-            'external_id'  => md5(uniqid()),
-            'source_id'    => $sourceId,
-            'title'        => 'Headline',
-            'description'  => 'Summary',
-            'content'      => '',
-            'url'          => 'https://example.com/' . uniqid(),
-            'image_url'    => null,
-            'author'       => null,
-            'category'     => null,
-            'source_name'  => ucfirst($sourceId),
-            'published_at' => Carbon::now(),
-        ];
+        return new ArticleDto(
+            externalId:  md5(uniqid()),
+            source:      $source,
+            title:       'Headline',
+            description: 'Summary',
+            content:     null,
+            url:         'https://example.com/' . uniqid(),
+            imageUrl:    null,
+            author:      null,
+            category:    null,
+            sourceName:  ucfirst($source),
+            publishedAt: Carbon::now(),
+        );
     }
 
     public function test_fetch_and_store_aggregates_all_fetchers(): void
     {
-        $fetcher1 = $this->makeFetcherMock('newsapi', collect([$this->sampleArticle('newsapi')]));
-        $fetcher2 = $this->makeFetcherMock('guardian', collect([$this->sampleArticle('guardian'), $this->sampleArticle('guardian')]));
+        $fetcher1 = $this->makeFetcherMock('newsapi', collect([$this->makeDto('newsapi')]));
+        $fetcher2 = $this->makeFetcherMock('guardian', collect([$this->makeDto('guardian'), $this->makeDto('guardian')]));
 
         $repository = Mockery::mock(ArticleRepository::class);
         $repository->shouldReceive('upsertBatch')->twice()->andReturn(1, 2);

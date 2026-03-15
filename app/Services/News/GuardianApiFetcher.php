@@ -3,10 +3,11 @@
 namespace App\Services\News;
 
 use App\Contracts\NewsFetcherInterface;
-use Illuminate\Support\Collection;
+use App\DTOs\ArticleDto;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Log;
 use Guardian\GuardianAPI;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 
 class GuardianApiFetcher implements NewsFetcherInterface
 {
@@ -95,7 +96,7 @@ class GuardianApiFetcher implements NewsFetcherInterface
     }
   }
 
-  public function normalize(array $item): array
+  public function normalize(array $item): ArticleDto
   {
     $raw    = $item['fields'] ?? [];
     $fields = $raw instanceof \stdClass ? (array) $raw : (array) $raw;
@@ -108,20 +109,19 @@ class GuardianApiFetcher implements NewsFetcherInterface
       $author = $contributorTags ?: null;
     }
 
-    return [
-      'external_id'   => md5($item['id'] ?? $item['webUrl'] ?? uniqid('guardian_', true)),
-      'source'        => $this->getSourceId(),
-      'title'         => $fields['headline'] ?? $item['webTitle'] ?? '',
-      'description'   => $fields['trailText'] ?? $fields['standfirst'] ?? '',
-      'content'       => $fields['bodyText'] ?? '',
-      'url'           => $item['webUrl'] ?? ($fields['shortUrl'] ?? ''),
-      'image_url'     => $fields['thumbnail'] ?? null,
-      'author'        => $author,
-      'source_name'   => 'The Guardian',
-      'category'      => $item['sectionName'] ?? ($item['pillarName'] ?? null),
-      'published_at'  => Carbon::parse($publishedAt)->utc(),
-      'fetched_at'    => now(),
-    ];
+    return new ArticleDto(
+      externalId:  md5($item['id'] ?? $item['webUrl'] ?? uniqid('guardian_', true)),
+      source:      $this->getSourceId(),
+      title:       $fields['headline'] ?? $item['webTitle'] ?? '',
+      description: ($fields['trailText'] ?? $fields['standfirst'] ?? '') ?: null,
+      content:     ($fields['bodyText'] ?? '') ?: null,
+      url:         $item['webUrl'] ?? ($fields['shortUrl'] ?? ''),
+      imageUrl:    $fields['thumbnail'] ?? null,
+      author:      $author,
+      category:    $item['sectionName'] ?? ($item['pillarName'] ?? null),
+      sourceName:  'The Guardian',
+      publishedAt: Carbon::parse($publishedAt)->utc(),
+    );
   }
 
   public function getSourceName(): string

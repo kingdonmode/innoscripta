@@ -3,9 +3,10 @@
 namespace App\Services\News;
 
 use App\Contracts\NewsFetcherInterface;
+use App\DTOs\ArticleDto;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class NytimesFetcher implements NewsFetcherInterface
@@ -86,14 +87,13 @@ class NytimesFetcher implements NewsFetcherInterface
     }
   }
 
-  public function normalize(array $item): array
+  public function normalize(array $item): ArticleDto
   {
     $publishedAt = $item['published_date'] ?? now()->toIso8601String();
 
     // Multimedia: find the best image (often 'mediumThreeByTwo440' or 'superJumbo')
     $imageUrl = null;
     if (!empty($item['multimedia'])) {
-      // Pick largest available or a standard one
       $image = collect($item['multimedia'])->firstWhere('format', 'superJumbo')
         ?? collect($item['multimedia'])->firstWhere('format', 'mediumThreeByTwo440')
         ?? collect($item['multimedia'])->first();
@@ -117,20 +117,19 @@ class NytimesFetcher implements NewsFetcherInterface
     // Prefer subsection for a more specific category label.
     $category = $item['subsection'] ?: ($item['section'] ?? null);
 
-    return [
-      'external_id'   => md5($item['url'] ?? uniqid('nytimes_', true)),
-      'source'        => $this->getSourceId(),
-      'title'         => $item['title']  ?? '',
-      'description'   => $abstract,
-      'content'       => $content,
-      'url'           => $item['url']    ?? '',
-      'image_url'     => $imageUrl,
-      'author'        => trim(str_replace('By ', '', $item['byline'] ?? '')) ?: null,
-      'source_name'   => 'The New York Times',
-      'category'      => $category,
-      'published_at'  => Carbon::parse($publishedAt)->utc(),
-      'fetched_at'    => now(),
-    ];
+    return new ArticleDto(
+      externalId:  md5($item['url'] ?? uniqid('nytimes_', true)),
+      source:      $this->getSourceId(),
+      title:       $item['title'] ?? '',
+      description: $abstract ?: null,
+      content:     $content ?: null,
+      url:         $item['url'] ?? '',
+      imageUrl:    $imageUrl,
+      author:      trim(str_replace('By ', '', $item['byline'] ?? '')) ?: null,
+      category:    $category ?: null,
+      sourceName:  'The New York Times',
+      publishedAt: Carbon::parse($publishedAt)->utc(),
+    );
   }
 
   private function joinFacets(string $label, array $facets): string

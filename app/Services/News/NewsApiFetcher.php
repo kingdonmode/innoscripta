@@ -3,9 +3,10 @@
 namespace App\Services\News;
 
 use App\Contracts\NewsFetcherInterface;
+use App\DTOs\ArticleDto;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class NewsApiFetcher implements NewsFetcherInterface
@@ -66,7 +67,7 @@ class NewsApiFetcher implements NewsFetcherInterface
         }
     }
 
-    public function normalize(array $item): array
+    public function normalize(array $item): ArticleDto
     {
         $publishedAt = $item['dateTimePub'] ?? $item['dateTime'] ?? now()->toIso8601ZuluString();
 
@@ -90,20 +91,19 @@ class NewsApiFetcher implements NewsFetcherInterface
             $description   = $firstSentence ? $firstSentence . '.' : mb_substr($body, 0, 250);
         }
 
-        return [
-            'external_id'  => md5($item['url'] ?? uniqid('newsapi_', true)),
-            'source'       => $this->getSourceId(),
-            'title'        => $item['title']            ?? '',
-            'description'  => $description,
-            'content'      => $body,
-            'url'          => $item['url']              ?? '',
-            'image_url'    => $item['image']            ?? null,
-            'author'       => $author,
-            'source_name'  => 'News Api',
-            'category'     => $category,
-            'published_at' => Carbon::parse($publishedAt)->utc(),
-            'fetched_at'   => now(),
-        ];
+        return new ArticleDto(
+            externalId:  md5($item['url'] ?? uniqid('newsapi_', true)),
+            source:      $this->getSourceId(),
+            title:       $item['title'] ?? '',
+            description: $description ?: null,
+            content:     $body ?: null,
+            url:         $item['url'] ?? '',
+            imageUrl:    $item['image'] ?? null,
+            author:      $author,
+            category:    $category,
+            sourceName:  'News Api',
+            publishedAt: Carbon::parse($publishedAt)->utc(),
+        );
     }
 
     public function getSourceName(): string

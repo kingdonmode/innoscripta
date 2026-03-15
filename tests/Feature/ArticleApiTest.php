@@ -22,10 +22,8 @@ class ArticleApiTest extends TestCase
 
         $response->assertOk()
                  ->assertJsonStructure([
-                     'data'         => [['id', 'title', 'source', 'published_at']],
-                     'current_page',
-                     'per_page',
-                     'total',
+                     'data' => [['id', 'title', 'source', 'published_at']],
+                     'meta' => ['current_page', 'per_page', 'total'],
                  ]);
     }
 
@@ -34,7 +32,7 @@ class ArticleApiTest extends TestCase
         $response = $this->getJson(route('v1.articles.index'));
 
         $response->assertOk()
-                 ->assertJsonPath('total', 0);
+                 ->assertJsonPath('meta.total', 0);
     }
 
     public function test_search_filters_by_title_keyword(): void
@@ -45,7 +43,7 @@ class ArticleApiTest extends TestCase
         $response = $this->getJson(route('v1.articles.index', ['q' => 'Laravel']));
 
         $response->assertOk()
-                 ->assertJsonPath('total', 1)
+                 ->assertJsonPath('meta.total', 1)
                  ->assertJsonFragment(['title' => 'Laravel is fantastic']);
     }
 
@@ -57,7 +55,7 @@ class ArticleApiTest extends TestCase
         $response = $this->getJson(route('v1.articles.index', ['q' => 'Redis']));
 
         $response->assertOk()
-                 ->assertJsonPath('total', 1);
+                 ->assertJsonPath('meta.total', 1);
     }
 
     public function test_filter_by_single_source(): void
@@ -68,7 +66,7 @@ class ArticleApiTest extends TestCase
         $response = $this->getJson(route('v1.articles.index', ['source' => 'guardian']));
 
         $response->assertOk()
-                 ->assertJsonPath('total', 1)
+                 ->assertJsonPath('meta.total', 1)
                  ->assertJsonFragment(['source' => 'guardian']);
     }
 
@@ -81,7 +79,7 @@ class ArticleApiTest extends TestCase
         $response = $this->getJson(route('v1.articles.index', ['source' => 'guardian,nytimes']));
 
         $response->assertOk()
-                 ->assertJsonPath('total', 2);
+                 ->assertJsonPath('meta.total', 2);
     }
 
     public function test_filter_by_category(): void
@@ -92,7 +90,7 @@ class ArticleApiTest extends TestCase
         $response = $this->getJson(route('v1.articles.index', ['category' => 'sports']));
 
         $response->assertOk()
-                 ->assertJsonPath('total', 1)
+                 ->assertJsonPath('meta.total', 1)
                  ->assertJsonFragment(['category' => 'sports']);
     }
 
@@ -104,7 +102,7 @@ class ArticleApiTest extends TestCase
         $response = $this->getJson(route('v1.articles.index', ['author' => 'Alice Smith']));
 
         $response->assertOk()
-                 ->assertJsonPath('total', 1)
+                 ->assertJsonPath('meta.total', 1)
                  ->assertJsonFragment(['author' => 'Alice Smith']);
     }
 
@@ -117,7 +115,7 @@ class ArticleApiTest extends TestCase
         $response = $this->getJson(route('v1.articles.index', ['author' => 'Alice Smith,Bob Jones']));
 
         $response->assertOk()
-                 ->assertJsonPath('total', 2);
+                 ->assertJsonPath('meta.total', 2);
     }
 
     public function test_filter_by_author_partial_name_returns_no_results(): void
@@ -127,7 +125,7 @@ class ArticleApiTest extends TestCase
         $response = $this->getJson(route('v1.articles.index', ['author' => 'Alice']));
 
         $response->assertOk()
-                 ->assertJsonPath('total', 0);
+                 ->assertJsonPath('meta.total', 0);
     }
 
     public function test_authors_returns_distinct_non_null_authors(): void
@@ -151,7 +149,7 @@ class ArticleApiTest extends TestCase
         $response = $this->getJson(route('v1.articles.index', ['from' => '2024-01-01', 'to' => '2024-07-01']));
 
         $response->assertOk()
-                 ->assertJsonPath('total', 2);
+                 ->assertJsonPath('meta.total', 2);
     }
 
     public function test_per_page_param_controls_pagination(): void
@@ -161,7 +159,7 @@ class ArticleApiTest extends TestCase
         $response = $this->getJson(route('v1.articles.index', ['per_page' => 2]));
 
         $response->assertOk()
-                 ->assertJsonPath('per_page', 2)
+                 ->assertJsonPath('meta.per_page', 2)
                  ->assertJsonCount(2, 'data');
     }
 
