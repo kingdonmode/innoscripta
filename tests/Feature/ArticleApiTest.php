@@ -18,7 +18,7 @@ class ArticleApiTest extends TestCase
     {
         Article::factory()->count(2)->create();
 
-        $response = $this->getJson('/api/v1/articles');
+        $response = $this->getJson(route('v1.articles.index'));
 
         $response->assertOk()
                  ->assertJsonStructure([
@@ -31,7 +31,7 @@ class ArticleApiTest extends TestCase
 
     public function test_articles_index_returns_empty_when_no_records(): void
     {
-        $response = $this->getJson('/api/v1/articles');
+        $response = $this->getJson(route('v1.articles.index'));
 
         $response->assertOk()
                  ->assertJsonPath('total', 0);
@@ -42,7 +42,7 @@ class ArticleApiTest extends TestCase
         Article::factory()->create(['title' => 'Laravel is fantastic']);
         Article::factory()->create(['title' => 'Vue.js guide']);
 
-        $response = $this->getJson('/api/v1/articles?q=Laravel');
+        $response = $this->getJson(route('v1.articles.index', ['q' => 'Laravel']));
 
         $response->assertOk()
                  ->assertJsonPath('total', 1)
@@ -54,7 +54,7 @@ class ArticleApiTest extends TestCase
         Article::factory()->create(['description' => 'Deep dive into Redis caching']);
         Article::factory()->create(['description' => 'Intro to containers']);
 
-        $response = $this->getJson('/api/v1/articles?q=Redis');
+        $response = $this->getJson(route('v1.articles.index', ['q' => 'Redis']));
 
         $response->assertOk()
                  ->assertJsonPath('total', 1);
@@ -65,7 +65,7 @@ class ArticleApiTest extends TestCase
         Article::factory()->create(['source' => 'guardian']);
         Article::factory()->create(['source' => 'nytimes']);
 
-        $response = $this->getJson('/api/v1/articles?source=guardian');
+        $response = $this->getJson(route('v1.articles.index', ['source' => 'guardian']));
 
         $response->assertOk()
                  ->assertJsonPath('total', 1)
@@ -78,7 +78,7 @@ class ArticleApiTest extends TestCase
         Article::factory()->create(['source' => 'nytimes']);
         Article::factory()->create(['source' => 'newsapi']);
 
-        $response = $this->getJson('/api/v1/articles?source=guardian,nytimes');
+        $response = $this->getJson(route('v1.articles.index', ['source' => 'guardian,nytimes']));
 
         $response->assertOk()
                  ->assertJsonPath('total', 2);
@@ -89,7 +89,7 @@ class ArticleApiTest extends TestCase
         Article::factory()->create(['category' => 'technology']);
         Article::factory()->create(['category' => 'sports']);
 
-        $response = $this->getJson('/api/v1/articles?category=sports');
+        $response = $this->getJson(route('v1.articles.index', ['category' => 'sports']));
 
         $response->assertOk()
                  ->assertJsonPath('total', 1)
@@ -101,7 +101,7 @@ class ArticleApiTest extends TestCase
         Article::factory()->create(['author' => 'Alice Smith']);
         Article::factory()->create(['author' => 'Bob Jones']);
 
-        $response = $this->getJson('/api/v1/articles?author=Alice+Smith');
+        $response = $this->getJson(route('v1.articles.index', ['author' => 'Alice Smith']));
 
         $response->assertOk()
                  ->assertJsonPath('total', 1)
@@ -114,7 +114,7 @@ class ArticleApiTest extends TestCase
         Article::factory()->create(['author' => 'Bob Jones']);
         Article::factory()->create(['author' => 'Carol White']);
 
-        $response = $this->getJson('/api/v1/articles?author=Alice+Smith,Bob+Jones');
+        $response = $this->getJson(route('v1.articles.index', ['author' => 'Alice Smith,Bob Jones']));
 
         $response->assertOk()
                  ->assertJsonPath('total', 2);
@@ -124,7 +124,7 @@ class ArticleApiTest extends TestCase
     {
         Article::factory()->create(['author' => 'Alice Smith']);
 
-        $response = $this->getJson('/api/v1/articles?author=Alice');
+        $response = $this->getJson(route('v1.articles.index', ['author' => 'Alice']));
 
         $response->assertOk()
                  ->assertJsonPath('total', 0);
@@ -136,7 +136,7 @@ class ArticleApiTest extends TestCase
         Article::factory()->create(['author' => 'Bob Jones']);
         Article::factory()->create(['author' => null]);
 
-        $response = $this->getJson('/api/v1/articles/authors');
+        $response = $this->getJson(route('v1.articles.authors'));
 
         $response->assertOk()
                  ->assertJsonCount(2, 'data');
@@ -148,7 +148,7 @@ class ArticleApiTest extends TestCase
         Article::factory()->create(['published_at' => '2024-06-15 12:00:00']);
         Article::factory()->create(['published_at' => '2024-12-20 12:00:00']);
 
-        $response = $this->getJson('/api/v1/articles?from=2024-01-01&to=2024-07-01');
+        $response = $this->getJson(route('v1.articles.index', ['from' => '2024-01-01', 'to' => '2024-07-01']));
 
         $response->assertOk()
                  ->assertJsonPath('total', 2);
@@ -158,7 +158,7 @@ class ArticleApiTest extends TestCase
     {
         Article::factory()->count(5)->create();
 
-        $response = $this->getJson('/api/v1/articles?per_page=2');
+        $response = $this->getJson(route('v1.articles.index', ['per_page' => 2]));
 
         $response->assertOk()
                  ->assertJsonPath('per_page', 2)
@@ -167,14 +167,14 @@ class ArticleApiTest extends TestCase
 
     public function test_invalid_per_page_returns_422(): void
     {
-        $response = $this->getJson('/api/v1/articles?per_page=999');
+        $response = $this->getJson(route('v1.articles.index', ['per_page' => 999]));
 
         $response->assertUnprocessable();
     }
 
     public function test_invalid_date_returns_422(): void
     {
-        $response = $this->getJson('/api/v1/articles?from=not-a-date');
+        $response = $this->getJson(route('v1.articles.index', ['from' => 'not-a-date']));
 
         $response->assertUnprocessable();
     }
@@ -187,7 +187,7 @@ class ArticleApiTest extends TestCase
     {
         $article = Article::factory()->create(['title' => 'Specific article']);
 
-        $response = $this->getJson("/api/v1/articles/{$article->id}");
+        $response = $this->getJson(route('v1.articles.show', $article));
 
         $response->assertOk()
                  ->assertJsonPath('data.id', $article->id)
@@ -196,7 +196,7 @@ class ArticleApiTest extends TestCase
 
     public function test_show_returns_404_for_missing_article(): void
     {
-        $response = $this->getJson('/api/v1/articles/99999');
+        $response = $this->getJson(route('v1.articles.show', 99999));
 
         $response->assertNotFound();
     }
@@ -210,7 +210,7 @@ class ArticleApiTest extends TestCase
         Article::factory()->count(2)->create(['source' => 'newsapi', 'source_name' => 'NewsAPI']);
         Article::factory()->create(['source' => 'guardian', 'source_name' => 'The Guardian']);
 
-        $response = $this->getJson('/api/v1/articles/sources');
+        $response = $this->getJson(route('v1.articles.sources'));
 
         $response->assertOk()
                  ->assertJsonCount(2, 'data');
@@ -226,7 +226,7 @@ class ArticleApiTest extends TestCase
         Article::factory()->create(['category' => 'world']);
         Article::factory()->create(['category' => null]);
 
-        $response = $this->getJson('/api/v1/articles/categories');
+        $response = $this->getJson(route('v1.articles.categories'));
 
         $response->assertOk()
                  ->assertJsonCount(2, 'data');

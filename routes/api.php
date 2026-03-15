@@ -13,12 +13,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::prefix('v1')->group(function () {
-    Route::prefix('articles')->group(function () {
-        Route::get('/', [ArticleController::class, 'index']);
-        Route::get('/sources', [ArticleController::class, 'sources']);
-        Route::get('/authors', [ArticleController::class, 'authors']);
-        Route::get('/categories', [ArticleController::class, 'categories']);
-        Route::get('/{article}', [ArticleController::class, 'show']);
+Route::prefix('v1')->name('v1.')->group(function () {
+    Route::prefix('articles')->name('articles.')->group(function () {
+        Route::get('/', [ArticleController::class, 'index'])->name('index');
+        Route::get('/sources', [ArticleController::class, 'sources'])->name('sources');
+        Route::get('/authors', [ArticleController::class, 'authors'])->name('authors');
+        Route::get('/categories', [ArticleController::class, 'categories'])->name('categories');
+        Route::get('/{article}', [ArticleController::class, 'show'])->name('show');
     });
 });
