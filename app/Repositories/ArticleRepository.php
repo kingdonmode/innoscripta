@@ -3,15 +3,82 @@
 namespace App\Repositories;
 
 use App\Models\Article;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
 class ArticleRepository
 {
+    // -------------------------------------------------------------------------
+    // Reads
+    // -------------------------------------------------------------------------
+
     /**
-     * Upsert a batch of normalized article arrays into the database.
-     * Existing records are updated; new ones are inserted.
+     * Return a paginated, filtered list of articles.
      *
-     * Returns the number of articles persisted.
+     * Recognised filter keys:
+     *   q, source, category, author, from, to, sort, order, per_page
+     */
+    public function paginate(array $filters = []): LengthAwarePaginator
+    {
+        $perPage = (int) ($filters['per_page'] ?? 15);
+        $sort    = $filters['sort']  ?? 'published_at';
+        $order   = $filters['order'] ?? 'desc';
+
+        return Article::query()
+            ->search($filters['q']        ?? null)
+            ->forSource($filters['source']   ?? null)
+            ->forCategory($filters['category'] ?? null)
+            ->forAuthor($filters['author']   ?? null)
+            ->publishedFrom($filters['from']     ?? null)
+            ->publishedTo($filters['to']      ?? null)
+            ->orderBy($sort, $order)
+            ->paginate($perPage);
+    }
+
+    public function findById(int $id): ?Article
+    {
+        return Article::find($id);
+    }
+
+    /** Distinct sources with article counts, ordered by name. */
+    public function allSources(): Collection
+    {
+        return Article::query()
+            ->selectRaw('source_id, source_name, COUNT(*) as article_count')
+            ->groupBy('source_id', 'source_name')
+            ->orderBy('source_name')
+            ->get();
+    }
+
+    /** Distinct non-null categories with article counts, ordered alphabetically. */
+    public function allCategories(): Collection
+    {
+        return Article::query()
+            ->selectRaw('category, COUNT(*) as article_count')
+            ->whereNotNull('category')
+            ->groupBy('category')
+            ->orderBy('category')
+            ->get();
+    }
+
+    /** Distinct non-null authors with article counts, ordered alphabetically. */
+    public function allAuthors(): Collection
+    {
+        return Article::query()
+            ->selectRaw('author, COUNT(*) as article_count')
+            ->whereNotNull('author')
+            ->groupBy('author')
+            ->orderBy('author')
+            ->get();
+    }
+
+    // -------------------------------------------------------------------------
+    // Writes
+    // -------------------------------------------------------------------------
+
+    /**
+     * Upsert a batch of normalized article arrays.
+     * Deduplicates on `url`; returns the number of rows processed.
      */
     public function upsertBatch(Collection $articles): int
     {
@@ -31,8 +98,8 @@ class ArticleRepository
 
         Article::upsert(
             $rows,
-            ['url'],                              // unique key to match on
-            [                                     // columns to update on conflict
+            ['url'],
+            [
                 'source_id', 'external_id', 'title', 'description',
                 'content', 'image_url', 'author', 'category',
                 'source_name', 'published_at', 'updated_at',
@@ -41,6 +108,10 @@ class ArticleRepository
 
         return count($rows);
     }
+
+    // -------------------------------------------------------------------------
+    // Private helpers
+    // -------------------------------------------------------------------------
 
     private function prepareRow(array $article): array
     {

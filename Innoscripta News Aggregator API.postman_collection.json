@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "979b2b1b-88f9-48fc-84bf-7ef4dd38443b",
 		"name": "Innoscripta News Aggregator API",
-		"description": "REST API for a news aggregator backend that fetches and stores articles from EventRegistry, The Guardian, and The New York Times.\n\n**Base URL:** `{{base_url}}/api`\n\n**Data sources:**\n- `newsapi` — EventRegistry (global news index)\n- `guardian` — The Guardian\n- `nytimes` — The New York Times (Times Wire)\n\n**Pagination:** All listing endpoints are paginated using Laravel's `LengthAwarePaginator`. Pagination metadata (`total`, `per_page`, `current_page`, `last_page`, `next_page_url`, `prev_page_url`) is returned at the root level alongside `data`.\n\n**Refreshing data:** Run `php artisan news:fetch` manually or let the hourly scheduler handle it.",
+		"description": "REST API for a news aggregator backend that fetches and stores articles from EventRegistry, The Guardian, and The New York Times.\n\n**Base URL:** `{{base_url}}/api/v1`\n\n**Data sources:**\n- `newsapi` — EventRegistry (global news index)\n- `guardian` — The Guardian\n- `nytimes` — The New York Times (Times Wire)\n\n**Pagination:** All listing endpoints are paginated using Laravel's `LengthAwarePaginator`. Pagination metadata (`total`, `per_page`, `current_page`, `last_page`, `next_page_url`, `prev_page_url`) is returned at the root level alongside `data`.\n\n**Refreshing data:** Run `php artisan news:fetch` manually or let the hourly scheduler handle it.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "3684503",
 		"_collection_link": "https://gold-resonance-524834.postman.co/workspace/My-Workspace~61c7175a-e899-4117-871c-405d1928d7af/collection/3684503-979b2b1b-88f9-48fc-84bf-7ef4dd38443b?action=share&source=collection_link&creator=3684503"
@@ -22,12 +22,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/articles?source=guardian,nytimes,newsapi&author=Vikram Singh, Amy Graff, Hannah Harris Green&per_page=15&page=1&sort=published_at&order=desc",
+							"raw": "{{base_url}}/api/v1/articles?source=guardian,nytimes,newsapi&author=Vikram Singh, Amy Graff, Hannah Harris Green&per_page=15&page=1&sort=published_at&order=desc",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"articles"
 							],
 							"query": [
@@ -45,7 +46,7 @@
 								{
 									"key": "category",
 									"value": "Technology",
-									"description": "Filter by one or more categories (comma-separated, case-sensitive).\n\nUse `GET /api/articles/categories` to discover available values.\n\nExample: `category=Technology` or `category=Business,Science`",
+									"description": "Filter by one or more categories (comma-separated, case-sensitive).\n\nUse `GET /api/v1/articles/categories` to discover available values.\n\nExample: `category=Technology` or `category=Business,Science`",
 									"disabled": true
 								},
 								{
@@ -109,7 +110,7 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"current_page\": 1,\n    \"data\": [],\n    \"first_page_url\": \"http://localhost:8000/api/articles?page=1\",\n    \"from\": null,\n    \"last_page\": 1,\n    \"last_page_url\": \"http://localhost:8000/api/articles?page=1\",\n    \"links\": [\n        {\n            \"url\": null,\n            \"label\": \"&laquo; Previous\",\n            \"active\": false\n        },\n        {\n            \"url\": \"http://localhost:8000/api/articles?page=1\",\n            \"label\": \"1\",\n            \"active\": true\n        },\n        {\n            \"url\": null,\n            \"label\": \"Next &raquo;\",\n            \"active\": false\n        }\n    ],\n    \"next_page_url\": null,\n    \"path\": \"http://localhost:8000/api/articles\",\n    \"per_page\": 15,\n    \"prev_page_url\": null,\n    \"to\": null,\n    \"total\": 0\n}"
+							"body": "{\n    \"current_page\": 1,\n    \"data\": [],\n    \"first_page_url\": \"http://localhost:8000/api/v1/articles?page=1\",\n    \"from\": null,\n    \"last_page\": 1,\n    \"last_page_url\": \"http://localhost:8000/api/v1/articles?page=1\",\n    \"links\": [\n        {\n            \"url\": null,\n            \"label\": \"&laquo; Previous\",\n            \"active\": false\n        },\n        {\n            \"url\": \"http://localhost:8000/api/v1/articles?page=1\",\n            \"label\": \"1\",\n            \"active\": true\n        },\n        {\n            \"url\": null,\n            \"label\": \"Next &raquo;\",\n            \"active\": false\n        }\n    ],\n    \"next_page_url\": null,\n    \"path\": \"http://localhost:8000/api/v1/articles\",\n    \"per_page\": 15,\n    \"prev_page_url\": null,\n    \"to\": null,\n    \"total\": 0\n}"
 						},
 						{
 							"name": "422 Unprocessable — invalid per_page",
@@ -185,12 +186,13 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/articles?source=guardian,nytimes,newsapi&author=Vikram Singh, Amy Graff, Hannah Harris Green&per_page=15&page=1&sort=published_at&order=desc",
+									"raw": "{{base_url}}/api/v1/articles?source=guardian,nytimes,newsapi&author=Vikram Singh, Amy Graff, Hannah Harris Green&per_page=15&page=1&sort=published_at&order=desc",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
+										"v1",
 										"articles"
 									],
 									"query": [
@@ -208,7 +210,7 @@
 										{
 											"key": "category",
 											"value": "Technology",
-											"description": "Filter by one or more categories (comma-separated, case-sensitive).\n\nUse `GET /api/articles/categories` to discover available values.\n\nExample: `category=Technology` or `category=Business,Science`",
+											"description": "Filter by one or more categories (comma-separated, case-sensitive).\n\nUse `GET /api/v1/articles/categories` to discover available values.\n\nExample: `category=Technology` or `category=Business,Science`",
 											"disabled": true
 										},
 										{
@@ -288,7 +290,7 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"current_page\": 1,\n    \"data\": [\n        {\n            \"id\": 427,\n            \"external_id\": \"35990895c51ac67dd47a9205e79765f6\",\n            \"source_id\": \"newsapi\",\n            \"title\": \"Hyundai Verna vs Volkswagen Virtus 2026: Price, Features and Performance, Check New Updates - Times Bull\",\n            \"description\": \"Hyundai Verna 2026 vs Volkswagen Virtus: When it comes to sedans that exude luxury and speed on Indian roads, the Hyundai Verna and Volkswagen Virtus are top-rated.\",\n            \"content\": \"Hyundai Verna 2026 vs Volkswagen Virtus: When it comes to sedans that exude luxury and speed on Indian roads, the Hyundai Verna and Volkswagen Virtus are top-rated. Hyundai has launched the new 2026 Verna, which not only features a refreshed exterior but also has its variants renamed to the powerful, top-spec model, the HX10.\\n\\nOn the other hand, the Volkswagen Virtus GT Plus, boasting German engineering, is giving it tough competition with its solid build and performance. If you're unsure about which car to choose for your garage this year, this comparison will prove to be a game-changer.\\n\\nRECOMMENDED:EPFO Withdrawal Rules: 5 Benefits of ATM PF WithdrawalsRECOMMENDED:LPG Gas Tips- How to Check If Your Cylinder Has Less Gas? Know the processEngine and Power\\n\\nWhen it comes to performance, both cars are excellent in their segments. The Hyundai Verna's top-spec HX10 model offers customers a choice of turbocharged and naturally aspirated petrol engines, which are only available with automatic gearboxes.\\n\\nOn the other hand, the Volkswagen Virtus GT Plus model comes exclusively with a 1.5-liter TSI turbocharged petrol engine, renowned for its robust power delivery. While the lower variants of the Virtus also offer a 1.0-liter turbocharged engine, both cars offer a smooth, automatic transmission in the top-end model, making for a truly luxurious driving experience.\\n\\nRECOMMENDED:Navodaya Vidyalaya Class 6 Entrance Exam Result Expected Soon, Know Cut-Off Details\\\"RECOMMENDED:Weather Forecast - Rain Alert for 18 States For next 4 Days, Check Full Monsoon UpdateExterior and Design\\n\\nThe new Hyundai Verna 2026 features some minor but impressive changes. It now features stylish 16-inch alloy wheels with connected LED lights. The Verna's most distinctive feature is its large wing spoiler, which gives it a sports car-like appearance from the rear. The Virtus, on the other hand, has a more sober and European-style design.\\n\\nThe Virtus also features fog lamps on both the front and rear, which are very helpful in inclement weather. While the Verna offers a dual-tone paint option, the Virtus attracts customers with its chrome and sport trims. The Vertus's small and stylish trunk spoiler adds to its classic aesthetic.\\n\\nRECOMMENDED:FASTag Annual Pass Gets Costlier, Check the New Toll FeeRECOMMENDED:Upcoming 5G Phones in India: Poco X8 Pro, Vivo T5x 5G, Samsung Galaxy M17 5G and More Check Launch DateCabin and Smart Features\\n\\nHyundai has always been a king when it comes to features, and the 2026 Verna is no exception. The Verna HX10 offers a comprehensive infotainment system and a large digital display. It features a power driver's seat with memory function and an 'Electric Boss Mode' for the front passenger seat, giving you the feel of a luxury limousine. It also offers sunshades for the rear windows.\\n\\nHowever, the Vertus is not far behind; it features a 60:40 split rear seat, which helps increase boot space when needed, a feature missing from the Verna. The Vertus' seats feel quite firm, but the Verna wins when it comes to luxury features.\\n\\n5-Star Rating and Advanced Technology\\n\\nIn terms of safety, both cars are among the most reliable vehicles in the Indian market. The Volkswagen Virtus already comes with a 5-star Global NCAP rating, a testament to its robust body. The older Hyundai Verna also received a 5-star rating, and the 2026 model is expected to meet even stricter safety standards.\\n\\nHowever, in terms of safety technology, the Verna HX10 goes a step further than the Virtus, with Level 2 ADAS (Advanced Driver Assistance System), a 360-degree camera, and more airbags. These advanced features are not even found in the top-spec Virtus model, making the Verna a smart choice.\",\n            \"url\": \"https://www.timesbull.com/auto/hyundai-verna-vs-volkswagen-virtus-2026-price-features-and-performance-check-new-updates-728309.html\",\n            \"image_url\": \"https://www.timesbull.com/wp-content/uploads/2026/03/New-Sedan-Comparison.webp\",\n            \"author\": \"Vikram Singh\",\n            \"category\": \"Vehicles\",\n            \"source_name\": \"News Api\",\n            \"published_at\": \"2026-03-14T12:19:48.000000Z\",\n            \"created_at\": \"2026-03-14T13:05:21.000000Z\",\n            \"updated_at\": \"2026-03-14T13:06:39.000000Z\"\n        },\n        {\n            \"id\": 547,\n            \"external_id\": \"57e0316771965107d7d426a6205e141a\",\n            \"source_id\": \"guardian\",\n            \"title\": \"New study raises concerns about AI chatbots fueling delusional thinking\",\n            \"description\": \"First major study on ‘AI psychosis’ suggests chatbots can encourage delusions among vulnerable people\",\n            \"content\": \"A new scientific review raises concerns about how chatbots powered by artificial intelligence may encourage delusional thinking, especially in vulnerable people. A summary of existing evidence on artificial intelligence-induced psychosis was published last week in the Lancet Psychiatry, highlighting how chatbots can encourage delusional thinking – though possibly only in people who are already vulnerable to psychotic symptoms. The authors advocate for clinical testing of AI chatbots in conjunction with trained mental health professionals. For his paper, Dr Hamilton Morrin, a psychiatrist and researcher at King’s College in London, analyzed 20 media reports on so-called “AI psychosis”, which describes current theories as to how chatbots might induce or exacerbate delusions. “Emerging evidence indicates that agential AI might validate or amplify delusional or grandiose content, particularly in users already vulnerable to psychosis, although it is not clear whether these interactions can result in the emergence of de novo psychosis in the absence of pre-existing vulnerability,” he wrote. There are three main categories of psychotic delusions, Morrin says, identifying them as grandiose, romantic and paranoid. While chatbots can exacerbate any of these, their sycophantic responses means they especially latch on to the grandiose kind. In many of the cases in the essay, chatbots responded to users with mystical language to suggest that users have heightened spiritual importance. The bots also implied that users were speaking with a cosmic being who was using the chatbot as a medium. This type of mystical, sycophantic response was especially common in OpenAI’s GPT 4 model, which the company has now retired. Media reports would become essential in Morrin’s work, he said, as he and a colleague had already noticed patients “using large language model AI chatbots and having them validate their delusional beliefs”. “Initially, we weren’t sure if this was something being seen more widely,” he said, adding that “in April last year, we began to see media reports of individuals having delusions affirmed and arguably even amplified through their interactions with these AI chatbots.” When Morrin first began working on his paper, there were no published case reports yet. While some scientists who research psychosis said that media reports tend to overstate the idea that AI causes psychosis, Morrin expressed gratitude for those reports drawing attention to the phenomenon much faster than the scientific process can. “The pace of development in this space is so rapid that it’s perhaps not surprising that academia hasn’t necessarily been able to keep up,” said Morrin. Morrin also suggests more cautious phrasing than “AI psychosis” or “AI-induced psychosis”– phrases which are appearing frequently in outlets like NPR, the New York Times and the Guardian. Researchers are seeing people tipping into delusional thinking with AI use, but so far there’s no evidence that chatbots are associated with other psychotic symptoms like hallucinations or “thought disorder”, which consists of disorganized thinking and speech. Many researchers also think it’s unlikely that AI could induce delusions in people who weren’t already vulnerable to them. For this reason, Morrin said “AI-assocciated delusions” is “perhaps a more agnostic term”. Dr Kwame McKenzie, chief scientist at the Center for Addiction and Mental Health, says “it may be that those in early stages of the development of psychosis will be more at risk”. Psychotic thinking is something that develops over time and is not linear, and many people with “pre-psychotic thinking do not progress into psychotic thinking”, McKenzie explained. Echoing the concern that chatbots could worsen psychotic thinking is Dr Ragy Girgis, a professor of clinical psychiatry at Columbia University. Before someone develops a full on delusion, they will often have “attenuated delusional beliefs”, he says, which means they are not 100% sure their delusion is true. Girgis said the “worst case scenario” is when an attenuated delusion becomes a full on conviction, “which is when someone would be diagnosed with a psychotic disorder – it’s irreversible”. Notably, people who are vulnerable to psychotic disorders have used media to reinforce delusional beliefs long before AI technology existed. “People have been having delusions about technology since before the Industrial Revolution,” Morrin said. While in the past, people may have had to comb through YouTube videos or the contents of their local library to reinforce their delusions, chatbots can provide that reinforcement in a much faster, more concentrated dose. Their interactive nature can also “speed up the process”, of exacerbating psychotic symptoms, said Dr Dominic Oliver, a researcher at the University of Oxford. “You have something talking back to you and engaging with you and trying to build a relationship with you,” Oliver said. Girgis’s research found “the paid versions and newer versions [of chatbots] perform better than the older versions”, when they respond to clearly delusional prompts, “although they all perform badly”. Still, that these models perform differently suggests: “AI companies could potentially know how to program their chatbots to be safer and identify delusional versus non delusional content, because they’re doing it.” In a statement, OpenAI said that ChatGPT should not replace professional mental healthcare, and that the company worked with 170 mental health experts to make GPT 5 safer. GPT 5 has still given problematic responses to prompts indicating mental health crises. OpenAI said it continues to improve its models with the help of experts. Anthropic did not respond to the Guardian’s request for comment. Creating effective safeguards for delusional thinking could be tricky, Morrin said, because “when you work with people with beliefs of delusional intensity, if you directly challenge someone and tell them immediately that they’re completely wrong, actually what’s most likely is they’ll withdraw from you and become more socially isolated”. Instead, it’s important to create a fine balance where you try to understand the source of the delusional belief without encouraging it – that could be more than a chatbot can master.\",\n            \"url\": \"https://www.theguardian.com/technology/2026/mar/14/ai-chatbots-psychosis\",\n            \"image_url\": \"https://media.guim.co.uk/2816e6cb10ddbf2981d386e6e681efec5cacd23b/0_0_6827_5464/500.jpg\",\n            \"author\": \"Hannah Harris Green\",\n            \"category\": \"Technology\",\n            \"source_name\": \"The Guardian\",\n            \"published_at\": \"2026-03-14T11:00:18.000000Z\",\n            \"created_at\": \"2026-03-14T13:06:41.000000Z\",\n            \"updated_at\": \"2026-03-14T13:06:41.000000Z\"\n        },\n        {\n            \"id\": 587,\n            \"external_id\": \"5fdb2452932760c1b141b148060e20c7\",\n            \"source_id\": \"nytimes\",\n            \"title\": \"5 Things to Know About the Unusual March Heat Wave in the West\",\n            \"description\": \"Soaring temperatures across California and the Southwest are expected to break records for March.\",\n            \"content\": \"Soaring temperatures across California and the Southwest are expected to break records for March.\\n\\nTopics: Heat and Heat Waves, Weather, Deserts\\n\\nOrganizations: National Weather Service\\n\\nLocations: Los Angeles (Calif), Arizona, California, Palm Springs (Calif), Phoenix (Ariz)\",\n            \"url\": \"https://www.nytimes.com/2026/03/14/weather/west-coast-heat-wave-la-phoenix.html\",\n            \"image_url\": \"https://static01.nyt.com/images/2026/03/14/multimedia/14wea-heatwavewtk-qjpg/14wea-heatwavewtk-qjpg-mediumThreeByTwo440.jpg\",\n            \"author\": \"Amy Graff\",\n            \"category\": \"Weather\",\n            \"source_name\": \"The New York Times\",\n            \"published_at\": \"2026-03-14T09:30:04.000000Z\",\n            \"created_at\": \"2026-03-14T13:06:42.000000Z\",\n            \"updated_at\": \"2026-03-14T13:06:42.000000Z\"\n        }\n    ],\n    \"first_page_url\": \"http://localhost:8000/api/articles?page=1\",\n    \"from\": 1,\n    \"last_page\": 1,\n    \"last_page_url\": \"http://localhost:8000/api/articles?page=1\",\n    \"links\": [\n        {\n            \"url\": null,\n            \"label\": \"&laquo; Previous\",\n            \"page\": null,\n            \"active\": false\n        },\n        {\n            \"url\": \"http://localhost:8000/api/articles?page=1\",\n            \"label\": \"1\",\n            \"page\": 1,\n            \"active\": true\n        },\n        {\n            \"url\": null,\n            \"label\": \"Next &raquo;\",\n            \"page\": null,\n            \"active\": false\n        }\n    ],\n    \"next_page_url\": null,\n    \"path\": \"http://localhost:8000/api/articles\",\n    \"per_page\": 15,\n    \"prev_page_url\": null,\n    \"to\": 3,\n    \"total\": 3\n}"
+							"body": "{\n    \"current_page\": 1,\n    \"data\": [\n        {\n            \"id\": 427,\n            \"external_id\": \"35990895c51ac67dd47a9205e79765f6\",\n            \"source_id\": \"newsapi\",\n            \"title\": \"Hyundai Verna vs Volkswagen Virtus 2026: Price, Features and Performance, Check New Updates - Times Bull\",\n            \"description\": \"Hyundai Verna 2026 vs Volkswagen Virtus: When it comes to sedans that exude luxury and speed on Indian roads, the Hyundai Verna and Volkswagen Virtus are top-rated.\",\n            \"content\": \"Hyundai Verna 2026 vs Volkswagen Virtus: When it comes to sedans that exude luxury and speed on Indian roads, the Hyundai Verna and Volkswagen Virtus are top-rated. Hyundai has launched the new 2026 Verna, which not only features a refreshed exterior but also has its variants renamed to the powerful, top-spec model, the HX10.\\n\\nOn the other hand, the Volkswagen Virtus GT Plus, boasting German engineering, is giving it tough competition with its solid build and performance. If you're unsure about which car to choose for your garage this year, this comparison will prove to be a game-changer.\\n\\nRECOMMENDED:EPFO Withdrawal Rules: 5 Benefits of ATM PF WithdrawalsRECOMMENDED:LPG Gas Tips- How to Check If Your Cylinder Has Less Gas? Know the processEngine and Power\\n\\nWhen it comes to performance, both cars are excellent in their segments. The Hyundai Verna's top-spec HX10 model offers customers a choice of turbocharged and naturally aspirated petrol engines, which are only available with automatic gearboxes.\\n\\nOn the other hand, the Volkswagen Virtus GT Plus model comes exclusively with a 1.5-liter TSI turbocharged petrol engine, renowned for its robust power delivery. While the lower variants of the Virtus also offer a 1.0-liter turbocharged engine, both cars offer a smooth, automatic transmission in the top-end model, making for a truly luxurious driving experience.\\n\\nRECOMMENDED:Navodaya Vidyalaya Class 6 Entrance Exam Result Expected Soon, Know Cut-Off Details\\\"RECOMMENDED:Weather Forecast - Rain Alert for 18 States For next 4 Days, Check Full Monsoon UpdateExterior and Design\\n\\nThe new Hyundai Verna 2026 features some minor but impressive changes. It now features stylish 16-inch alloy wheels with connected LED lights. The Verna's most distinctive feature is its large wing spoiler, which gives it a sports car-like appearance from the rear. The Virtus, on the other hand, has a more sober and European-style design.\\n\\nThe Virtus also features fog lamps on both the front and rear, which are very helpful in inclement weather. While the Verna offers a dual-tone paint option, the Virtus attracts customers with its chrome and sport trims. The Vertus's small and stylish trunk spoiler adds to its classic aesthetic.\\n\\nRECOMMENDED:FASTag Annual Pass Gets Costlier, Check the New Toll FeeRECOMMENDED:Upcoming 5G Phones in India: Poco X8 Pro, Vivo T5x 5G, Samsung Galaxy M17 5G and More Check Launch DateCabin and Smart Features\\n\\nHyundai has always been a king when it comes to features, and the 2026 Verna is no exception. The Verna HX10 offers a comprehensive infotainment system and a large digital display. It features a power driver's seat with memory function and an 'Electric Boss Mode' for the front passenger seat, giving you the feel of a luxury limousine. It also offers sunshades for the rear windows.\\n\\nHowever, the Vertus is not far behind; it features a 60:40 split rear seat, which helps increase boot space when needed, a feature missing from the Verna. The Vertus' seats feel quite firm, but the Verna wins when it comes to luxury features.\\n\\n5-Star Rating and Advanced Technology\\n\\nIn terms of safety, both cars are among the most reliable vehicles in the Indian market. The Volkswagen Virtus already comes with a 5-star Global NCAP rating, a testament to its robust body. The older Hyundai Verna also received a 5-star rating, and the 2026 model is expected to meet even stricter safety standards.\\n\\nHowever, in terms of safety technology, the Verna HX10 goes a step further than the Virtus, with Level 2 ADAS (Advanced Driver Assistance System), a 360-degree camera, and more airbags. These advanced features are not even found in the top-spec Virtus model, making the Verna a smart choice.\",\n            \"url\": \"https://www.timesbull.com/auto/hyundai-verna-vs-volkswagen-virtus-2026-price-features-and-performance-check-new-updates-728309.html\",\n            \"image_url\": \"https://www.timesbull.com/wp-content/uploads/2026/03/New-Sedan-Comparison.webp\",\n            \"author\": \"Vikram Singh\",\n            \"category\": \"Vehicles\",\n            \"source_name\": \"News Api\",\n            \"published_at\": \"2026-03-14T12:19:48.000000Z\",\n            \"created_at\": \"2026-03-14T13:05:21.000000Z\",\n            \"updated_at\": \"2026-03-14T13:06:39.000000Z\"\n        },\n        {\n            \"id\": 547,\n            \"external_id\": \"57e0316771965107d7d426a6205e141a\",\n            \"source_id\": \"guardian\",\n            \"title\": \"New study raises concerns about AI chatbots fueling delusional thinking\",\n            \"description\": \"First major study on ‘AI psychosis’ suggests chatbots can encourage delusions among vulnerable people\",\n            \"content\": \"A new scientific review raises concerns about how chatbots powered by artificial intelligence may encourage delusional thinking, especially in vulnerable people. A summary of existing evidence on artificial intelligence-induced psychosis was published last week in the Lancet Psychiatry, highlighting how chatbots can encourage delusional thinking – though possibly only in people who are already vulnerable to psychotic symptoms. The authors advocate for clinical testing of AI chatbots in conjunction with trained mental health professionals. For his paper, Dr Hamilton Morrin, a psychiatrist and researcher at King’s College in London, analyzed 20 media reports on so-called “AI psychosis”, which describes current theories as to how chatbots might induce or exacerbate delusions. “Emerging evidence indicates that agential AI might validate or amplify delusional or grandiose content, particularly in users already vulnerable to psychosis, although it is not clear whether these interactions can result in the emergence of de novo psychosis in the absence of pre-existing vulnerability,” he wrote. There are three main categories of psychotic delusions, Morrin says, identifying them as grandiose, romantic and paranoid. While chatbots can exacerbate any of these, their sycophantic responses means they especially latch on to the grandiose kind. In many of the cases in the essay, chatbots responded to users with mystical language to suggest that users have heightened spiritual importance. The bots also implied that users were speaking with a cosmic being who was using the chatbot as a medium. This type of mystical, sycophantic response was especially common in OpenAI’s GPT 4 model, which the company has now retired. Media reports would become essential in Morrin’s work, he said, as he and a colleague had already noticed patients “using large language model AI chatbots and having them validate their delusional beliefs”. “Initially, we weren’t sure if this was something being seen more widely,” he said, adding that “in April last year, we began to see media reports of individuals having delusions affirmed and arguably even amplified through their interactions with these AI chatbots.” When Morrin first began working on his paper, there were no published case reports yet. While some scientists who research psychosis said that media reports tend to overstate the idea that AI causes psychosis, Morrin expressed gratitude for those reports drawing attention to the phenomenon much faster than the scientific process can. “The pace of development in this space is so rapid that it’s perhaps not surprising that academia hasn’t necessarily been able to keep up,” said Morrin. Morrin also suggests more cautious phrasing than “AI psychosis” or “AI-induced psychosis”– phrases which are appearing frequently in outlets like NPR, the New York Times and the Guardian. Researchers are seeing people tipping into delusional thinking with AI use, but so far there’s no evidence that chatbots are associated with other psychotic symptoms like hallucinations or “thought disorder”, which consists of disorganized thinking and speech. Many researchers also think it’s unlikely that AI could induce delusions in people who weren’t already vulnerable to them. For this reason, Morrin said “AI-assocciated delusions” is “perhaps a more agnostic term”. Dr Kwame McKenzie, chief scientist at the Center for Addiction and Mental Health, says “it may be that those in early stages of the development of psychosis will be more at risk”. Psychotic thinking is something that develops over time and is not linear, and many people with “pre-psychotic thinking do not progress into psychotic thinking”, McKenzie explained. Echoing the concern that chatbots could worsen psychotic thinking is Dr Ragy Girgis, a professor of clinical psychiatry at Columbia University. Before someone develops a full on delusion, they will often have “attenuated delusional beliefs”, he says, which means they are not 100% sure their delusion is true. Girgis said the “worst case scenario” is when an attenuated delusion becomes a full on conviction, “which is when someone would be diagnosed with a psychotic disorder – it’s irreversible”. Notably, people who are vulnerable to psychotic disorders have used media to reinforce delusional beliefs long before AI technology existed. “People have been having delusions about technology since before the Industrial Revolution,” Morrin said. While in the past, people may have had to comb through YouTube videos or the contents of their local library to reinforce their delusions, chatbots can provide that reinforcement in a much faster, more concentrated dose. Their interactive nature can also “speed up the process”, of exacerbating psychotic symptoms, said Dr Dominic Oliver, a researcher at the University of Oxford. “You have something talking back to you and engaging with you and trying to build a relationship with you,” Oliver said. Girgis’s research found “the paid versions and newer versions [of chatbots] perform better than the older versions”, when they respond to clearly delusional prompts, “although they all perform badly”. Still, that these models perform differently suggests: “AI companies could potentially know how to program their chatbots to be safer and identify delusional versus non delusional content, because they’re doing it.” In a statement, OpenAI said that ChatGPT should not replace professional mental healthcare, and that the company worked with 170 mental health experts to make GPT 5 safer. GPT 5 has still given problematic responses to prompts indicating mental health crises. OpenAI said it continues to improve its models with the help of experts. Anthropic did not respond to the Guardian’s request for comment. Creating effective safeguards for delusional thinking could be tricky, Morrin said, because “when you work with people with beliefs of delusional intensity, if you directly challenge someone and tell them immediately that they’re completely wrong, actually what’s most likely is they’ll withdraw from you and become more socially isolated”. Instead, it’s important to create a fine balance where you try to understand the source of the delusional belief without encouraging it – that could be more than a chatbot can master.\",\n            \"url\": \"https://www.theguardian.com/technology/2026/mar/14/ai-chatbots-psychosis\",\n            \"image_url\": \"https://media.guim.co.uk/2816e6cb10ddbf2981d386e6e681efec5cacd23b/0_0_6827_5464/500.jpg\",\n            \"author\": \"Hannah Harris Green\",\n            \"category\": \"Technology\",\n            \"source_name\": \"The Guardian\",\n            \"published_at\": \"2026-03-14T11:00:18.000000Z\",\n            \"created_at\": \"2026-03-14T13:06:41.000000Z\",\n            \"updated_at\": \"2026-03-14T13:06:41.000000Z\"\n        },\n        {\n            \"id\": 587,\n            \"external_id\": \"5fdb2452932760c1b141b148060e20c7\",\n            \"source_id\": \"nytimes\",\n            \"title\": \"5 Things to Know About the Unusual March Heat Wave in the West\",\n            \"description\": \"Soaring temperatures across California and the Southwest are expected to break records for March.\",\n            \"content\": \"Soaring temperatures across California and the Southwest are expected to break records for March.\\n\\nTopics: Heat and Heat Waves, Weather, Deserts\\n\\nOrganizations: National Weather Service\\n\\nLocations: Los Angeles (Calif), Arizona, California, Palm Springs (Calif), Phoenix (Ariz)\",\n            \"url\": \"https://www.nytimes.com/2026/03/14/weather/west-coast-heat-wave-la-phoenix.html\",\n            \"image_url\": \"https://static01.nyt.com/images/2026/03/14/multimedia/14wea-heatwavewtk-qjpg/14wea-heatwavewtk-qjpg-mediumThreeByTwo440.jpg\",\n            \"author\": \"Amy Graff\",\n            \"category\": \"Weather\",\n            \"source_name\": \"The New York Times\",\n            \"published_at\": \"2026-03-14T09:30:04.000000Z\",\n            \"created_at\": \"2026-03-14T13:06:42.000000Z\",\n            \"updated_at\": \"2026-03-14T13:06:42.000000Z\"\n        }\n    ],\n    \"first_page_url\": \"http://localhost:8000/api/v1/articles?page=1\",\n    \"from\": 1,\n    \"last_page\": 1,\n    \"last_page_url\": \"http://localhost:8000/api/v1/articles?page=1\",\n    \"links\": [\n        {\n            \"url\": null,\n            \"label\": \"&laquo; Previous\",\n            \"page\": null,\n            \"active\": false\n        },\n        {\n            \"url\": \"http://localhost:8000/api/v1/articles?page=1\",\n            \"label\": \"1\",\n            \"page\": 1,\n            \"active\": true\n        },\n        {\n            \"url\": null,\n            \"label\": \"Next &raquo;\",\n            \"page\": null,\n            \"active\": false\n        }\n    ],\n    \"next_page_url\": null,\n    \"path\": \"http://localhost:8000/api/v1/articles\",\n    \"per_page\": 15,\n    \"prev_page_url\": null,\n    \"to\": 3,\n    \"total\": 3\n}"
 						}
 					]
 				},
@@ -303,12 +305,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/articles/424",
+							"raw": "{{base_url}}/api/v1/articles/424",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"articles",
 								"424"
 							]
@@ -348,12 +351,13 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/articles/424",
+									"raw": "{{base_url}}/api/v1/articles/424",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
+										"v1",
 										"articles",
 										"424"
 									]
@@ -417,12 +421,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/articles/sources",
+							"raw": "{{base_url}}/api/v1/articles/sources",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"articles",
 								"sources"
 							]
@@ -441,12 +446,13 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/articles/sources",
+									"raw": "{{base_url}}/api/v1/articles/sources",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
+										"v1",
 										"articles",
 										"sources"
 									]
@@ -501,12 +507,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/articles/categories",
+							"raw": "{{base_url}}/api/v1/articles/categories",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"articles",
 								"categories"
 							]
@@ -525,12 +532,13 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/articles/categories",
+									"raw": "{{base_url}}/api/v1/articles/categories",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
+										"v1",
 										"articles",
 										"categories"
 									]
@@ -600,12 +608,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/articles?source=guardian,nytimes&per_page=20&order=desc",
+							"raw": "{{base_url}}/api/v1/articles?source=guardian,nytimes&per_page=20&order=desc",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"articles"
 							],
 							"query": [
@@ -639,12 +648,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/articles?category=Technology,Science,Business&per_page=20",
+							"raw": "{{base_url}}/api/v1/articles?category=Technology,Science,Business&per_page=20",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"articles"
 							],
 							"query": [
@@ -673,12 +683,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/articles?author=Hannah&per_page=20",
+							"raw": "{{base_url}}/api/v1/articles?author=Hannah&per_page=20",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"articles"
 							],
 							"query": [
@@ -707,12 +718,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/articles?q=climate change&from=2026-03-01&to=2026-03-14&sort=published_at&order=desc",
+							"raw": "{{base_url}}/api/v1/articles?q=climate change&from=2026-03-01&to=2026-03-14&sort=published_at&order=desc",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"articles"
 							],
 							"query": [
@@ -753,12 +765,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/articles?q=artificial intelligence&source=guardian&category=Technology&per_page=10&order=desc",
+							"raw": "{{base_url}}/api/v1/articles?q=artificial intelligence&source=guardian&category=Technology&per_page=10&order=desc",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"articles"
 							],
 							"query": [
@@ -789,7 +802,7 @@
 					"response": []
 				}
 			],
-			"description": "These are not separate endpoints — they are pre-configured calls to `GET /api/articles` that demonstrate how the frontend can pass user preference data (saved sources, categories, authors) as query parameters."
+			"description": "These are not separate endpoints — they are pre-configured calls to `GET /api/v1/articles` that demonstrate how the frontend can pass user preference data (saved sources, categories, authors) as query parameters."
 		}
 	],
 	"variable": [

@@ -40,7 +40,7 @@ class ArticleApiTest extends TestCase
         $this->makeArticle();
         $this->makeArticle(['title' => 'Another piece']);
 
-        $response = $this->getJson('/api/articles');
+        $response = $this->getJson('/api/v1/articles');
 
         $response->assertOk()
                  ->assertJsonStructure([
@@ -53,7 +53,7 @@ class ArticleApiTest extends TestCase
 
     public function test_articles_index_returns_empty_when_no_records(): void
     {
-        $response = $this->getJson('/api/articles');
+        $response = $this->getJson('/api/v1/articles');
 
         $response->assertOk()
                  ->assertJsonPath('total', 0);
@@ -64,7 +64,7 @@ class ArticleApiTest extends TestCase
         $this->makeArticle(['title' => 'Laravel is fantastic']);
         $this->makeArticle(['title' => 'Vue.js guide']);
 
-        $response = $this->getJson('/api/articles?q=Laravel');
+        $response = $this->getJson('/api/v1/articles?q=Laravel');
 
         $response->assertOk()
                  ->assertJsonPath('total', 1)
@@ -76,7 +76,7 @@ class ArticleApiTest extends TestCase
         $this->makeArticle(['description' => 'Deep dive into Redis caching']);
         $this->makeArticle(['description' => 'Intro to containers']);
 
-        $response = $this->getJson('/api/articles?q=Redis');
+        $response = $this->getJson('/api/v1/articles?q=Redis');
 
         $response->assertOk()
                  ->assertJsonPath('total', 1);
@@ -87,7 +87,7 @@ class ArticleApiTest extends TestCase
         $this->makeArticle(['source_id' => 'guardian']);
         $this->makeArticle(['source_id' => 'nytimes']);
 
-        $response = $this->getJson('/api/articles?source=guardian');
+        $response = $this->getJson('/api/v1/articles?source=guardian');
 
         $response->assertOk()
                  ->assertJsonPath('total', 1)
@@ -100,7 +100,7 @@ class ArticleApiTest extends TestCase
         $this->makeArticle(['source_id' => 'nytimes']);
         $this->makeArticle(['source_id' => 'newsapi']);
 
-        $response = $this->getJson('/api/articles?source=guardian,nytimes');
+        $response = $this->getJson('/api/v1/articles?source=guardian,nytimes');
 
         $response->assertOk()
                  ->assertJsonPath('total', 2);
@@ -111,7 +111,7 @@ class ArticleApiTest extends TestCase
         $this->makeArticle(['category' => 'technology']);
         $this->makeArticle(['category' => 'sports']);
 
-        $response = $this->getJson('/api/articles?category=sports');
+        $response = $this->getJson('/api/v1/articles?category=sports');
 
         $response->assertOk()
                  ->assertJsonPath('total', 1)
@@ -123,7 +123,7 @@ class ArticleApiTest extends TestCase
         $this->makeArticle(['author' => 'Alice Smith']);
         $this->makeArticle(['author' => 'Bob Jones']);
 
-        $response = $this->getJson('/api/articles?author=Alice+Smith');
+        $response = $this->getJson('/api/v1/articles?author=Alice+Smith');
 
         $response->assertOk()
                  ->assertJsonPath('total', 1)
@@ -136,7 +136,7 @@ class ArticleApiTest extends TestCase
         $this->makeArticle(['author' => 'Bob Jones']);
         $this->makeArticle(['author' => 'Carol White']);
 
-        $response = $this->getJson('/api/articles?author=Alice+Smith,Bob+Jones');
+        $response = $this->getJson('/api/v1/articles?author=Alice+Smith,Bob+Jones');
 
         $response->assertOk()
                  ->assertJsonPath('total', 2);
@@ -146,7 +146,7 @@ class ArticleApiTest extends TestCase
     {
         $this->makeArticle(['author' => 'Alice Smith']);
 
-        $response = $this->getJson('/api/articles?author=Alice');
+        $response = $this->getJson('/api/v1/articles?author=Alice');
 
         $response->assertOk()
                  ->assertJsonPath('total', 0);
@@ -159,7 +159,7 @@ class ArticleApiTest extends TestCase
         $this->makeArticle(['author' => 'Bob Jones']);
         $this->makeArticle(['author' => null]);
 
-        $response = $this->getJson('/api/articles/authors');
+        $response = $this->getJson('/api/v1/articles/authors');
 
         $response->assertOk()
                  ->assertJsonCount(2, 'data');
@@ -171,7 +171,7 @@ class ArticleApiTest extends TestCase
         $this->makeArticle(['published_at' => '2024-06-15 12:00:00']);
         $this->makeArticle(['published_at' => '2024-12-20 12:00:00']);
 
-        $response = $this->getJson('/api/articles?from=2024-01-01&to=2024-07-01');
+        $response = $this->getJson('/api/v1/articles?from=2024-01-01&to=2024-07-01');
 
         $response->assertOk()
                  ->assertJsonPath('total', 2);
@@ -183,7 +183,7 @@ class ArticleApiTest extends TestCase
             $this->makeArticle();
         }
 
-        $response = $this->getJson('/api/articles?per_page=2');
+        $response = $this->getJson('/api/v1/articles?per_page=2');
 
         $response->assertOk()
                  ->assertJsonPath('per_page', 2)
@@ -192,14 +192,14 @@ class ArticleApiTest extends TestCase
 
     public function test_invalid_per_page_returns_422(): void
     {
-        $response = $this->getJson('/api/articles?per_page=999');
+        $response = $this->getJson('/api/v1/articles?per_page=999');
 
         $response->assertUnprocessable();
     }
 
     public function test_invalid_date_returns_422(): void
     {
-        $response = $this->getJson('/api/articles?from=not-a-date');
+        $response = $this->getJson('/api/v1/articles?from=not-a-date');
 
         $response->assertUnprocessable();
     }
@@ -212,7 +212,7 @@ class ArticleApiTest extends TestCase
     {
         $article = $this->makeArticle(['title' => 'Specific article']);
 
-        $response = $this->getJson("/api/articles/{$article->id}");
+        $response = $this->getJson("/api/v1/articles/{$article->id}");
 
         $response->assertOk()
                  ->assertJsonPath('data.id', $article->id)
@@ -221,7 +221,7 @@ class ArticleApiTest extends TestCase
 
     public function test_show_returns_404_for_missing_article(): void
     {
-        $response = $this->getJson('/api/articles/99999');
+        $response = $this->getJson('/api/v1/articles/99999');
 
         $response->assertNotFound();
     }
@@ -236,7 +236,7 @@ class ArticleApiTest extends TestCase
         $this->makeArticle(['source_id' => 'newsapi', 'source_name' => 'NewsAPI']);
         $this->makeArticle(['source_id' => 'guardian', 'source_name' => 'The Guardian']);
 
-        $response = $this->getJson('/api/articles/sources');
+        $response = $this->getJson('/api/v1/articles/sources');
 
         $response->assertOk()
                  ->assertJsonCount(2, 'data');
@@ -253,7 +253,7 @@ class ArticleApiTest extends TestCase
         $this->makeArticle(['category' => 'world']);
         $this->makeArticle(['category' => null]);
 
-        $response = $this->getJson('/api/articles/categories');
+        $response = $this->getJson('/api/v1/articles/categories');
 
         $response->assertOk()
                  ->assertJsonCount(2, 'data');

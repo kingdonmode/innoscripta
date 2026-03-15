@@ -35,7 +35,7 @@ A Laravel 12 backend that pulls articles from three live news sources, stores th
 **1. Clone the repository**
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/kingdonmode/innoscripta.git
 cd innoscripta
 ```
 
@@ -199,7 +199,7 @@ All responses are JSON. List endpoints return Laravel's standard paginator envel
 ### List Articles
 
 ```
-GET /api/articles
+GET /api/v1/articles
 ```
 
 Returns a paginated list of articles. All parameters are optional and combinable.
@@ -222,7 +222,7 @@ Returns a paginated list of articles. All parameters are optional and combinable
 **Example request:**
 
 ```
-GET /api/articles?q=artificial+intelligence&source=guardian&from=2024-06-01&per_page=10
+GET /api/v1/articles?q=artificial+intelligence&source=guardian&from=2024-06-01&per_page=10
 ```
 
 **Response:**
@@ -260,7 +260,7 @@ GET /api/articles?q=artificial+intelligence&source=guardian&from=2024-06-01&per_
 ### Get a Single Article
 
 ```
-GET /api/articles/{id}
+GET /api/v1/articles/{id}
 ```
 
 **Response:**
@@ -283,7 +283,7 @@ Returns `404` if the article does not exist.
 ### List Sources
 
 ```
-GET /api/articles/sources
+GET /api/v1/articles/sources
 ```
 
 Returns all news sources that have stored articles, along with an article count.
@@ -305,7 +305,7 @@ Returns all news sources that have stored articles, along with an article count.
 ### List Categories
 
 ```
-GET /api/articles/categories
+GET /api/v1/articles/categories
 ```
 
 Returns all distinct categories present in the database.
@@ -327,7 +327,7 @@ Returns all distinct categories present in the database.
 ### List Authors
 
 ```
-GET /api/articles/authors
+GET /api/v1/articles/authors
 ```
 
 Returns all distinct authors present in the database.
