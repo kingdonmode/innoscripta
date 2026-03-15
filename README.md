@@ -124,11 +124,7 @@ The API will be available at `http://localhost:8000/api`.
 
 ## Fetching News Articles
 
-Articles are fetched from all three sources with a single Artisan command:
-
-```bash
-php artisan news:fetch
-```
+The `news:fetch` command supports three modes. By default it dispatches a queued job per source so the command returns instantly and each source is processed in parallel by queue workers.
 
 **Available options:**
 
@@ -136,29 +132,69 @@ php artisan news:fetch
 |---|---|---|
 | `--query` | `technology` | Keyword to search for (NewsAPI & Guardian) |
 | `--section` | `all` | NYTimes section (`world`, `technology`, `business`, `arts`, etc.) |
-| `--dry-run` | — | Fetch but do not persist; useful for testing API connectivity |
+| `--dry-run` | — | Call the APIs and print counts — nothing is saved |
+| `--sync` | — | Fetch and save in the current process without queuing |
+
+### Modes explained
+
+| Mode | Saves data | Blocks terminal | Retries on failure | Use when |
+|---|---|---|---|---|
+| `--dry-run` | No | Yes | No | Verifying API keys |
+| `--sync` | Yes | Yes | No | No queue worker available |
+| _(default)_ | Yes | No | Yes (up to 3×) | Production |
 
 **Examples:**
 
 ```bash
-# Fetch the default technology articles
+# Production — dispatches one queued job per source (recommended)
 php artisan news:fetch
 
-# Fetch articles on climate change
+# Fetch articles on a specific topic
 php artisan news:fetch --query="climate change"
+
+# Fetch NYTimes world section
+php artisan news:fetch --section=world
 
 # Preview what would be fetched without saving
 php artisan news:fetch --dry-run
 
-# Fetch NYTimes world section specifically
-php artisan news:fetch --section=world
+# Fetch and save immediately without the queue
+php artisan news:fetch --sync
 ```
+
+---
+
+## Queue Worker
+
+When running in the default (queued) mode, a queue worker must be running to process the dispatched jobs.
+
+Start a worker:
+
+```bash
+php artisan queue:work
+```
+
+Each `FetchSourceArticles` job handles one news source. Failed jobs are **automatically retried up to 3 times** with a 60-second backoff before being moved to the failed jobs table.
+
+View failed jobs:
+
+```bash
+php artisan queue:failed
+```
+
+Retry a failed job:
+
+```bash
+php artisan queue:retry all
+```
+
+In production, manage the worker with a process supervisor such as [Supervisor](http://supervisord.org/) to ensure it stays running.
 
 ---
 
 ## Scheduled Updates
 
-The scheduler is configured to run `news:fetch` **every hour** automatically.
+The scheduler is configured to run `news:fetch` (queued mode) **daily** automatically.
 
 To activate it, add a single cron entry to your server:
 
@@ -351,28 +387,30 @@ Returns all distinct authors present in the database.
 ```
 app/
 ├── Contracts/
-│   └── NewsFetcherInterface.php     # Contract all fetchers implement
+│   └── NewsFetcherInterface.php      # Contract all fetchers implement
 ├── Console/
 │   └── Commands/
-│       └── FetchNewsArticles.php    # php artisan news:fetch
+│       └── FetchNewsArticles.php     # php artisan news:fetch (dry-run / sync / queue)
 ├── Http/
 │   ├── Controllers/
 │   │   └── Api/
 │   │       └── ArticleController.php
 │   └── Requests/
-│       └── ArticleFilterRequest.php # Input validation
+│       └── ArticleFilterRequest.php  # Input validation
+├── Jobs/
+│   └── FetchSourceArticles.php       # Queued job — one per news source, retries up to 3×
 ├── Models/
-│   └── Article.php                  # Eloquent model with query scopes
+│   └── Article.php                   # Eloquent model with query scopes
 ├── Providers/
-│   └── AppServiceProvider.php       # Wires fetchers into the aggregator
+│   └── AppServiceProvider.php        # Wires fetchers into the aggregator
 ├── Repositories/
-│   └── ArticleRepository.php        # Handles DB upserts
+│   └── ArticleRepository.php         # All DB reads and writes
 └── Services/
     └── News/
-        ├── GuardianApiFetcher.php   # The Guardian
-        ├── NewsApiFetcher.php       # EventRegistry (NewsAPI)
+        ├── GuardianApiFetcher.php    # The Guardian
+        ├── NewsApiFetcher.php        # EventRegistry (NewsAPI)
         ├── NewsAggregatorService.php # Orchestrates all fetchers
-        └── NytimesFetcher.php       # New York Times TimesWire
+        └── NytimesFetcher.php        # New York Times TimesWire
 
 routes/
 ├── api.php       # REST endpoints
